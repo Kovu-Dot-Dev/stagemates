@@ -1,0 +1,30 @@
+"use client";
+
+import { signIn, signOut, useSession } from "next-auth/react";
+
+export default function Login() {
+  const { data: session } = useSession();
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
+      {!session ? (
+        <button
+          className="px-4 py-2 bg-secondary text-primary-foreground rounded-md shadow-md cursor-pointer"
+          onClick={() => signIn("google")}
+        >
+          Sign in with Google
+        </button>
+      ) : (
+        <div className="text-center">
+          <p className="mb-4 text-primary-foreground">Welcome {session.user?.name}</p>
+          <button
+            className="cursor-pointer bg-secondary px-4 py-2 bg-primary text-primary-foreground rounded-md shadow-md"
+            onClick={() => signOut()}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
