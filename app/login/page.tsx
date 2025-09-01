@@ -2,7 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { ProfileForm } from "@/components/ui/signUpForm";
+import { ProfileForm } from "@/components/signUpForm";
 
 export default function Login() {
   const { data: session } = useSession();
