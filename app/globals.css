@@ -9,7 +9,7 @@
   --tertiary: #D9D9D9;
   --radius: 0.625rem;
   --background: #1c1c1c;
-  --foreground: oklch(0.145 0 0);
+  --foreground: #ffffff;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
