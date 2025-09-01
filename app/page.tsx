@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import HomeCard from "@/components/homeCard";
+import { Input } from "@/components/ui/input";
 
 interface User {
   id: number;
@@ -18,6 +18,7 @@ export default function Home() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (status === "loading") return; // Still loading
@@ -25,7 +26,7 @@ export default function Home() {
       router.push("/login");
       return;
     }
-    
+
     // Fetch users from database
     const fetchUsers = async () => {
       try {
@@ -40,9 +41,18 @@ export default function Home() {
         setLoading(false);
       }
     };
-    
+
     fetchUsers();
   }, [session, status, router]);
+
+  // Filter users based on search term
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.instruments.some((instrument) =>
+        instrument.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  );
 
   if (status === "loading" || loading) {
     return (
@@ -57,20 +67,39 @@ export default function Home() {
   }
 
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <h1 className="text-2xl font-bold text-foreground">List of Musicians</h1>
-      <div className="flex flex-col gap-4 w-2/3">
-        {users.length > 0 ? (
-          users.map((user) => (
-            <HomeCard 
-              key={user.id}
-              title={user.name} 
-              description={Array.isArray(user.instruments) ? user.instruments.join(", ") : user.instruments || "No instruments listed"} 
-            />
-          ))
-        ) : (
-          <p className="text-center text-muted-foreground">No musicians found</p>
-        )}
+    <div className="font-sans flex flex-col items-center min-h-screen p-8 gap-8 justify-center items-center">
+      <h1 className="text-2xl font-bold text-foreground text-center">
+        List of Musicians
+      </h1>
+      <div className="w-2/3 max-w-md mx-auto">
+        <Input
+          type="text"
+          placeholder="Search musicians by name or instrument..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full"
+        />
+      </div>
+      <div className="w-2/3 max-w-4xl space-y-6 flex flex-col items-center justify-center">
+        <div className="flex flex-col gap-4 w-2/3">
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user) => (
+              <HomeCard
+                key={user.id}
+                title={user.name}
+                instruments={user.instruments}
+              />
+            ))
+          ) : searchTerm ? (
+            <p className="text-center text-muted-foreground">
+              No musicians found matching "{searchTerm}"
+            </p>
+          ) : users.length === 0 ? (
+            <p className="text-center text-muted-foreground">
+              No musicians found
+            </p>
+          ) : null}
+        </div>
       </div>
     </div>
   );
