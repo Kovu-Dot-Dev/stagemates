@@ -7,6 +7,7 @@ import HomeCard from "@/components/homeCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import JamCard from "@/components/jamCard";
 
 
 interface User {
@@ -16,12 +17,22 @@ interface User {
   instruments: string[];
 }
 
+interface Jam {
+  created_at: string;
+  id: number;
+  jam_name: string;
+  location: string;
+}
+
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [jams, setJams] = useState<Jam[]>([]);
+
+ 
 
   useEffect(() => {
     if (status === "loading") return; // Still loading
@@ -45,6 +56,16 @@ export default function Home() {
       }
     };
 
+    const fetchJams = async () => {
+      const response = await fetch("/api/getJams");
+      const result = await response.json();
+      if (result.data) {
+        console.log(result.data);
+        setJams(result.data);
+      }
+    };
+
+    fetchJams();
     fetchUsers();
   }, [session, status, router]);
 
@@ -128,11 +149,21 @@ export default function Home() {
             </div>
           </TabsContent>
           
-          <TabsContent value="profile" className="space-y-6 mt-6">
-            <div className="text-center">
-              <p className="text-muted-foreground">
-                Profile management coming soon...
-              </p>
+          <TabsContent value="jams" className="space-y-6 mt-6">
+            <div className="flex flex-col gap-4">
+              {jams.length > 0 ? (
+                jams.map((jam) => (
+                  <JamCard 
+                    key={jam.id} 
+                    jamName={jam.jam_name} 
+                    location={jam.location || 'TBC'} 
+                  />
+                ))
+              ) : (
+                <p className="text-center text-muted-foreground">
+                  No jams found
+                </p>
+              )}
             </div>
           </TabsContent>
         </Tabs>
