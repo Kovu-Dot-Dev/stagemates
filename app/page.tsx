@@ -1,10 +1,13 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import HomeCard from "@/components/homeCard";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 interface User {
   id: number;
@@ -67,39 +70,72 @@ export default function Home() {
   }
 
   return (
-    <div className="font-sans flex flex-col items-center min-h-screen p-8 gap-8 justify-center items-center">
-      <h1 className="text-2xl font-bold text-foreground text-center">
-        List of Musicians
-      </h1>
-      <div className="w-2/3 max-w-md mx-auto">
-        <Input
-          type="text"
-          placeholder="Search musicians by name or instrument..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
-        />
+    <div className="font-sans flex flex-col min-h-screen p-8 gap-8">
+      {/* Header */}
+      <div className="w-full max-w-4xl mx-auto flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-foreground">
+          Stagemates
+        </h1>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => signOut()}
+        >
+          Sign out
+        </Button>
       </div>
-      <div className="w-2/3 max-w-4xl space-y-6 flex flex-col items-center justify-center">
-        <div className="flex flex-col gap-4 w-2/3">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <HomeCard
-                key={user.id}
-                title={user.name}
-                instruments={user.instruments}
+
+      {/* Tabs */}
+      <div className="w-full max-w-4xl mx-auto flex-1">
+        <Tabs defaultValue="musicians" className="w-full flex justify-center">
+          <TabsList className="grid w-1/3 mx-auto grid-cols-2">
+            <TabsTrigger value="musicians" className="cursor-pointer">Musicians</TabsTrigger>
+            <TabsTrigger value="jams" className="cursor-pointer">Jams</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="musicians" className="space-y-6 mt-6">
+            {/* Search */}
+            <div className="w-full max-w-md mx-auto">
+              <Input
+                type="text"
+                placeholder="Search musicians by name or instrument..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
               />
-            ))
-          ) : searchTerm ? (
-            <p className="text-center text-muted-foreground">
-              No musicians found matching "{searchTerm}"
-            </p>
-          ) : users.length === 0 ? (
-            <p className="text-center text-muted-foreground">
-              No musicians found
-            </p>
-          ) : null}
-        </div>
+            </div>
+
+            {/* Musicians List */}
+            <div className="flex flex-col gap-4">
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
+                  <HomeCard
+                    key={user.id}
+                    userId={user.id}
+                    title={user.name}
+                    instruments={user.instruments}
+                  />
+                ))
+              ) : searchTerm ? (
+                <p className="text-center text-muted-foreground">
+                  No musicians found matching "{searchTerm}"
+                </p>
+              ) : users.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  No musicians found
+                </p>
+              ) : null}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="profile" className="space-y-6 mt-6">
+            <div className="text-center">
+              <p className="text-muted-foreground">
+                Profile management coming soon...
+              </p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

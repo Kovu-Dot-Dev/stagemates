@@ -70,16 +70,6 @@ export default function Login() {
               <p className="text-muted-foreground">{session.user?.name}</p>
             </div>
             <ProfileForm />
-            <div className="space-y-3">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full cursor-pointer"
-                onClick={() => signOut()}
-              >
-                Sign out
-              </Button>
-            </div>
           </div>
         ) : (
           <div className="space-y-6 text-center">

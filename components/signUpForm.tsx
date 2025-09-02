@@ -27,7 +27,12 @@ const onSubmit = async (values: z.infer<typeof formSchema>, session: any, router
       email: session?.user?.email,
       name: session?.user?.name,
       username: values.username,
+      description: values.description || null,
       instruments: values.instruments,
+      spotifyLink: values.spotifyLink || null,
+      soundcloudLink: values.soundcloudLink || null,
+      instagramLink: values.instagramLink || null,
+      tiktokLink: values.tiktokLink || null,
     }),
   });
   
@@ -41,7 +46,12 @@ const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
+  description: z.string().optional(),
   instruments: z.array(z.enum(["guitar", "piano", "drums", "bass", "vocals", "other"])).min(1, "Please select at least one instrument"),
+  spotifyLink: z.string().url().optional().or(z.literal("")),
+  soundcloudLink: z.string().url().optional().or(z.literal("")),
+  instagramLink: z.string().url().optional().or(z.literal("")),
+  tiktokLink: z.string().url().optional().or(z.literal("")),
 });
 
 export function ProfileForm() {
@@ -51,7 +61,12 @@ export function ProfileForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      description: "",
       instruments: [],
+      spotifyLink: "",
+      soundcloudLink: "",
+      instagramLink: "",
+      tiktokLink: "",
     },
   });
 
@@ -69,6 +84,22 @@ export function ProfileForm() {
               </FormControl>
               <FormDescription>
                 This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="Tell us about yourself and your music..." {...field} />
+              </FormControl>
+              <FormDescription>
+                Describe your musical style, experience, or what you're looking for.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -94,6 +125,62 @@ export function ProfileForm() {
                   <ToggleGroupItem value="vocals">Vocals</ToggleGroupItem>
                   <ToggleGroupItem value="other">Other</ToggleGroupItem>
                 </ToggleGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="spotifyLink"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Spotify Link (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://open.spotify.com/artist/..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="soundcloudLink"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>SoundCloud Link (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://soundcloud.com/..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="instagramLink"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Instagram Link (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://instagram.com/..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="tiktokLink"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>TikTok Link (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://tiktok.com/@..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
