@@ -1,13 +1,13 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 export async function POST(req: Request) {
   const body = await req.json();
-  const { email, name, instruments } = body;
+  const { email, name, username, instruments } = body;
   
-  console.log("Received data:", { email, name, instruments });
+  console.log("Received data:", { email, name, username, instruments });
   
   const { data, error } = await supabaseServer
     .from("users")
-    .insert([{ email: email, name: name, instruments: instruments }]);
+    .insert([{ email: email, name: name, username: username, instruments: instruments }]);
     
   if (error) {
     console.log("Database error:", error);

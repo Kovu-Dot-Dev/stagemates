@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { Button } from "@/components/ui/button";
@@ -17,16 +19,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  await fetch("/api/adduser", {
+const onSubmit = async (values: z.infer<typeof formSchema>, session: any, router: any) => {
+  const response = await fetch("/api/adduser", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      email: "test@example.com",
-      name: values.username,
+      email: session?.user?.email,
+      name: session?.user?.name,
+      username: values.username,
       instruments: values.instruments,
     }),
   });
+  
+  if (response.ok) {
+    // Redirect to home page after successful submission
+    router.push("/");
+  }
 };
 
 const formSchema = z.object({
@@ -37,6 +45,8 @@ const formSchema = z.object({
 });
 
 export function ProfileForm() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,7 +57,7 @@ export function ProfileForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit((values) => onSubmit(values, session, router))} className="space-y-8">
         <FormField
           control={form.control}
           name="username"
