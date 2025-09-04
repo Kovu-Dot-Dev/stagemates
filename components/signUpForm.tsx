@@ -19,7 +19,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const onSubmit = async (values: z.infer<typeof formSchema>, session: any, router: any) => {
+const onSubmit = async (
+  values: z.infer<typeof formSchema>,
+  session: any,
+  router: any
+) => {
   const response = await fetch("/api/adduser", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -35,7 +39,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>, session: any, router
       tiktokLink: values.tiktokLink || null,
     }),
   });
-  
+
   if (response.ok) {
     // Redirect to home page after successful submission
     router.push("/");
@@ -43,36 +47,59 @@ const onSubmit = async (values: z.infer<typeof formSchema>, session: any, router
 };
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+  username: z.string().optional(),
   description: z.string().optional(),
-  instruments: z.array(z.enum(["guitar", "piano", "drums", "bass", "vocals", "other"])).min(1, "Please select at least one instrument"),
+  instruments: z
+    .array(z.enum(["guitar", "piano", "drums", "bass", "vocals", "other"]))
+    .optional(),
   spotifyLink: z.string().url().optional().or(z.literal("")),
   soundcloudLink: z.string().url().optional().or(z.literal("")),
   instagramLink: z.string().url().optional().or(z.literal("")),
   tiktokLink: z.string().url().optional().or(z.literal("")),
 });
 
-export function ProfileForm() {
+interface ProfileFormProps {
+  username?: string;
+  description?: string;
+  instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
+  spotifyLink?: string;
+  soundcloudLink?: string;
+  instagramLink?: string;
+  tiktokLink?: string;
+}
+
+export function ProfileForm({
+  username = "",
+  description = "",
+  instruments = [],
+  spotifyLink = "",
+  soundcloudLink = "",
+  instagramLink = "",
+  tiktokLink = "",
+}: ProfileFormProps = {}) {
   const { data: session } = useSession();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      description: "",
-      instruments: [],
-      spotifyLink: "",
-      soundcloudLink: "",
-      instagramLink: "",
-      tiktokLink: "",
+      username: username || "",
+      description: description || "",
+      instruments: instruments || [],
+      spotifyLink: spotifyLink || "",
+      soundcloudLink: soundcloudLink || "",
+      instagramLink: instagramLink || "",
+      tiktokLink: tiktokLink || "",
     },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((values) => onSubmit(values, session, router))} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit((values) =>
+          onSubmit(values, session, router)
+        )}
+        className="space-y-8"
+      >
         <FormField
           control={form.control}
           name="username"
@@ -96,10 +123,14 @@ export function ProfileForm() {
             <FormItem>
               <FormLabel>Description (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="Tell us about yourself and your music..." {...field} />
+                <Input
+                  placeholder="Tell us about yourself and your music..."
+                  {...field}
+                />
               </FormControl>
               <FormDescription>
-                Describe your musical style, experience, or what you're looking for.
+                Describe your musical style, experience, or what you're looking
+                for.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -138,7 +169,10 @@ export function ProfileForm() {
             <FormItem>
               <FormLabel>Spotify Link (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="https://open.spotify.com/artist/..." {...field} />
+                <Input
+                  placeholder="https://open.spotify.com/artist/..."
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
