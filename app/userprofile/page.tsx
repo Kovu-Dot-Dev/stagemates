@@ -144,7 +144,11 @@ export default function ProfilePage() {
                   <h3 className="text-lg font-semibold mb-3">Instruments</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.instruments.map((instrument, index) => (
-                      <Badge key={index} variant="secondary" className="text-sm">
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-sm"
+                      >
                         {instrument}
                       </Badge>
                     ))}
@@ -177,7 +181,7 @@ export default function ProfilePage() {
               <CardTitle>Edit Profile</CardTitle>
             </CardHeader>
             <CardContent>
-              <ProfileForm 
+              <ProfileForm
                 username={user.username}
                 description={user.description}
                 instruments={user.instruments}

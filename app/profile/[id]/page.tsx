@@ -88,6 +88,10 @@ export default function ProfilePage() {
   const [jamName, setJamName] = useState(getRandomJamName());
 
   const handleDialogOpen = (type: DialogType) => {
+    if (!session) {
+      router.push("/login");
+      return;
+    }
     setDialogType(type);
     setIsDialogOpen(true);
   };
@@ -213,10 +217,6 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (status === "loading") return;
-    if (!session) {
-      router.push("/login");
-      return;
-    }
 
     const fetchUser = async () => {
       try {
