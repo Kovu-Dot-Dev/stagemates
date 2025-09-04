@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import HomeCard from "@/components/homeCard";
@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JamCard from "@/components/jamCard";
-
 
 interface User {
   id: number;
@@ -32,15 +31,9 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [jams, setJams] = useState<Jam[]>([]);
 
- 
-
   useEffect(() => {
-    if (status === "loading") return; // Still loading
-    if (!session) {
-      router.push("/login");
-      return;
-    }
-
+    console.log("session", session);
+    console.log("loading", loading);
     // Fetch users from database
     const fetchUsers = async () => {
       try {
@@ -48,11 +41,14 @@ export default function Home() {
         const result = await response.json();
         if (result.data) {
           setUsers(result.data);
+          console.log("users fetched");
         }
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
+        console.log("finally");
         setLoading(false);
+        console.log("loading set to false");
       }
     };
 
@@ -65,8 +61,13 @@ export default function Home() {
       }
     };
 
-    fetchJams();
-    fetchUsers();
+    if (status === "loading") return; // Still loading
+
+    if (session == null || session) {
+      console.log("session is not null");
+      fetchJams();
+      fetchUsers();
+    }
   }, [session, status, router]);
 
   // Filter users based on search term
@@ -78,7 +79,7 @@ export default function Home() {
       )
   );
 
-  if (status === "loading" || loading) {
+  if (loading || status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-foreground">Loading...</div>
@@ -86,34 +87,57 @@ export default function Home() {
     );
   }
 
-  if (!session) {
-    return null; // Will redirect
-  }
-
   return (
     <div className="font-sans flex flex-col min-h-screen p-8 gap-8">
       {/* Header */}
       <div className="w-full max-w-4xl mx-auto flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-foreground">
-          Stagemates
-        </h1>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => signOut()}
-        >
-          Sign out
-        </Button>
+        <h1 className="text-2xl font-bold text-foreground">Stagemates</h1>
+        <div>
+          {session ? (
+            <>
+              <Button
+                variant="outline"
+                className="cursor-pointer mr-2"
+                size="sm"
+                onClick={() => {
+                  router.push("/userprofile");
+                }}
+              >
+                Profile
+              </Button>
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                size="sm"
+                onClick={() => signOut()}
+              >
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => signIn("google")}
+            >
+              Sign in with Google
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
       <div className="w-full max-w-4xl mx-auto flex-1">
         <Tabs defaultValue="musicians" className="w-full flex justify-center">
           <TabsList className="grid w-1/3 mx-auto grid-cols-2">
-            <TabsTrigger value="musicians" className="cursor-pointer">Musicians</TabsTrigger>
-            <TabsTrigger value="jams" className="cursor-pointer">Jams</TabsTrigger>
+            <TabsTrigger value="musicians" className="cursor-pointer">
+              Musicians
+            </TabsTrigger>
+            <TabsTrigger value="jams" className="cursor-pointer">
+              Jams
+            </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="musicians" className="space-y-6 mt-6">
             {/* Search */}
             <div className="w-full max-w-md mx-auto">
@@ -148,15 +172,15 @@ export default function Home() {
               ) : null}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="jams" className="space-y-6 mt-6">
             <div className="flex flex-col gap-4">
               {jams.length > 0 ? (
                 jams.map((jam) => (
-                  <JamCard 
-                    key={jam.id} 
-                    jamName={jam.jam_name} 
-                    location={jam.location || 'TBC'} 
+                  <JamCard
+                    key={jam.id}
+                    jamName={jam.jam_name}
+                    location={jam.location || "TBC"}
                   />
                 ))
               ) : (
