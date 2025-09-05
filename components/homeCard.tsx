@@ -26,12 +26,17 @@ export default function HomeCard({
   };
 
   return (
-    <Card className="w-full cursor-pointer hover:shadow-lg transition-shadow" onClick={handleCardClick}>
+    <Card
+      className="w-full cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={handleCardClick}
+    >
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription className="flex gap-2">
           {instruments.map((instrument, index) => (
-            <Badge key={index} variant="secondary">{instrument}</Badge>
+            <Badge key={index} variant="default">
+              {instrument}
+            </Badge>
           ))}
         </CardDescription>
       </CardHeader>

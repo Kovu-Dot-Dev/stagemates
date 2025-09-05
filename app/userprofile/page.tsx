@@ -79,7 +79,7 @@ export default function ProfilePage() {
           <h1 className="text-2xl font-bold text-foreground">
             Profile Not Found
           </h1>
-          <p className="text-muted-foreground">{error}</p>
+          <p className="">{error}</p>
           <Button onClick={() => router.push("/")} variant="default">
             Back to Home
           </Button>
@@ -124,9 +124,7 @@ export default function ProfilePage() {
                 <CardTitle className="flex justify-between items-center">
                   <div className="text-3xl flex">{user.name}</div>
                 </CardTitle>
-                <p className="text-xl text-muted-foreground">
-                  @{user.username}
-                </p>
+                <p className="text-xl ">@{user.username}</p>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -134,7 +132,7 @@ export default function ProfilePage() {
               {user.description && (
                 <div>
                   <h3 className="text-lg font-semibold mb-2">About</h3>
-                  <p className="text-muted-foreground">{user.description}</p>
+                  <p className="">{user.description}</p>
                 </div>
               )}
 
@@ -144,7 +142,11 @@ export default function ProfilePage() {
                   <h3 className="text-lg font-semibold mb-3">Instruments</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.instruments.map((instrument, index) => (
-                      <Badge key={index} variant="secondary" className="text-sm">
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-sm"
+                      >
                         {instrument}
                       </Badge>
                     ))}
@@ -167,7 +169,7 @@ export default function ProfilePage() {
               {/* Contact */}
               <div>
                 <h3 className="text-lg font-semibold mb-2">Contact</h3>
-                <p className="text-muted-foreground">{user.email}</p>
+                <p className="">{user.email}</p>
               </div>
             </CardContent>
           </Card>
@@ -177,7 +179,7 @@ export default function ProfilePage() {
               <CardTitle>Edit Profile</CardTitle>
             </CardHeader>
             <CardContent>
-              <ProfileForm 
+              <ProfileForm
                 username={user.username}
                 description={user.description}
                 instruments={user.instruments}

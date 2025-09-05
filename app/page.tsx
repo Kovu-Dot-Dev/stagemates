@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JamCard from "@/components/jamCard";
 import { Jam } from "@/components/jamCard";
+import { JamModal } from "@/components/jamCard";
 
 interface User {
   id: number;
@@ -24,6 +25,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [jams, setJams] = useState<Jam[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [currentJam, setCurrentJam] = useState<Jam | null>(null);
 
   useEffect(() => {
     console.log("session", session);
@@ -156,13 +159,11 @@ export default function Home() {
                   />
                 ))
               ) : searchTerm ? (
-                <p className="text-center text-muted-foreground">
+                <p className="text-center ">
                   No musicians found matching "{searchTerm}"
                 </p>
               ) : users.length === 0 ? (
-                <p className="text-center text-muted-foreground">
-                  No musicians found
-                </p>
+                <p className="text-center ">No musicians found</p>
               ) : null}
             </div>
           </TabsContent>
@@ -170,13 +171,25 @@ export default function Home() {
           <TabsContent value="jams" className="space-y-6 mt-6">
             <div className="flex flex-col gap-4">
               {jams.length > 0 ? (
-                jams.map((jam) => <JamCard key={jam.id} jam={jam} />)
+                jams.map((jam) => (
+                  <JamCard
+                    key={jam.id}
+                    jam={jam}
+                    handleClick={() => {
+                      setCurrentJam(jam);
+                      setShowModal(true);
+                    }}
+                  />
+                ))
               ) : (
-                <p className="text-center text-muted-foreground">
-                  No jams found
-                </p>
+                <p className="text-center ">No jams found</p>
               )}
             </div>
+            <JamModal
+              show={showModal}
+              onClose={() => setShowModal(false)}
+              jam={currentJam}
+            />
           </TabsContent>
         </Tabs>
       </div>
