@@ -3,14 +3,14 @@ import { supabaseServer } from "@/lib/supabaseServer";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { jamName } = body;
+    const { jamName, location, dateHappening, capacity, creatorEmail } = body;
     
-    console.log("Creating jam with:", { jamName });
+    console.log("Creating jam with:", { jamName, location, dateHappening, capacity, creatorEmail });
     
     // Validate required fields
-    if (!jamName) {
+    if (!jamName || !location || !dateHappening || !capacity) {
       return new Response(
-        JSON.stringify({ error: "Missing required field: jamName" }), 
+        JSON.stringify({ error: "Missing required fields: jamName, location, dateHappening, capacity" }), 
         { status: 400 }
       );
     }
@@ -20,8 +20,11 @@ export async function POST(req: Request) {
       .from("jams")
       .insert({
         jam_name: jamName,
+        location: location,
+        date_happening: new Date(dateHappening).toISOString(),
+        capacity: capacity,
+        owner_email: creatorEmail,
         created_at: new Date().toISOString(),
-        location: "tbc",
       })
       .select()
       .single();

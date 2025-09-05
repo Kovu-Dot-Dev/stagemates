@@ -8,16 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JamCard from "@/components/jamCard";
-import { Jam } from "@/components/jamCard";
+import { Jam, User } from "@/types";
 import { JamModal } from "@/components/jamCard";
 import CTACard from "@/components/ctaCard";
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  instruments: string[];
-}
+
+
+
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -71,8 +68,8 @@ export default function Home() {
   // Filter users based on search term
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.instruments.some((instrument) =>
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.instruments?.some((instrument) =>
         instrument.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
@@ -122,9 +119,6 @@ export default function Home() {
             </Button>
           )}
         </div>
-        <Button variant="outline" size="sm" onClick={() => signOut()}>
-          Sign out
-        </Button>
       </div>
 
       {/* Tabs */}
@@ -142,15 +136,7 @@ export default function Home() {
           <div className="flex gap-4">
             <CTACard
               title="Create a Jam"
-              description="Create a jam to connect with other musicians"
               buttonText="Create Jam"
-              onButtonClick={() => router.push("/create-jam")}
-            />
-            <CTACard
-              title="Find Jam Members"
-              description="Find musicians to join your jam"
-              buttonText="Find Members"
-              onButtonClick={() => router.push("/create-jam")}
             />
           </div>
 
