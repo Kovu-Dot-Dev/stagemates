@@ -21,7 +21,7 @@ export interface Jam {
 export function JamModal({ show, onClose, jam }) {
   if (!show) return null;
   return (
-    <div className="fixed inset-0 bg-gray-100 bg-opacity-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-100/75 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-96">
         <h2 className="text-2xl font-bold mb-4">{jam.name}</h2>
         <p className="mb-2">
