@@ -29,7 +29,7 @@ export default function CTACard({ title, buttonText }: CTACardProps) {
       </CardHeader>
       <CardContent className="space-y-4 text-center">
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button onClick={onButtonClick} className="w-full" size="lg">
               {buttonText}
             </Button>

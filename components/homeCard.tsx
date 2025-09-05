@@ -33,7 +33,7 @@ export default function HomeCard({
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription className="flex gap-2">
-          {instruments.map((instrument, index) => (
+          {instruments && instruments.map((instrument, index) => (
             <Badge key={index} variant="default">
               {instrument}
             </Badge>

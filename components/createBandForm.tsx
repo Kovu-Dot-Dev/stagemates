@@ -22,45 +22,48 @@ const jamFormSchema = z.object({
   jamName: z.string().min(1, "Jam name is required"),
   location: z.string().min(1, "Location is required"),
   dateHappening: z.string().min(1, "Date is required"),
-  capacity: z.number().min(1, "Capacity must be at least 1").max(100, "Capacity cannot exceed 100"),
+  capacity: z
+    .number()
+    .min(1, "Capacity must be at least 1")
+    .max(100, "Capacity cannot exceed 100"),
 });
 
 const JAM_NAMES = [
-    "tiny-dancing-duck",
-    "happy-fuzzy-bunny",
-    "sleepy-polka-panda",
-    "shiny-rainbow-fish",
-    "funky-guitar-goose",
-    "silly-purple-llama",
-    "jumping-banana-frog",
-    "wobbly-polka-pig",
-    "cosmic-disco-cat",
-    "jolly-marshmallow-moose",
-    "spicy-taco-turtle",
-    "bouncy-polka-bear",
-    "lucky-cactus-crow",
-    "mellow-mango-monkey",
-    "happy-marble-hedgehog",
-    "dancing-donut-dog",
-    "tiny-marshmallow-moth",
-    "silly-pizza-parrot",
-    "fuzzy-laser-fox",
-    "jelly-disco-deer",
-    "sleepy-cupcake-koala",
-    "funky-drum-duckling",
-    "rainbow-bubble-bat",
-    "giggly-marshmallow-mule",
-    "tiny-bongo-badger",
-    "sparkly-disco-dolphin",
-    "mellow-bubble-bear",
-    "happy-sundae-seal",
-    "silly-bongo-sheep",
-    "jazzy-marshmallow-jay",
-  ];
-  
-  const getRandomJamName = () => {
-    return JAM_NAMES[Math.floor(Math.random() * JAM_NAMES.length)];
-  };
+  "tiny-dancing-duck",
+  "happy-fuzzy-bunny",
+  "sleepy-polka-panda",
+  "shiny-rainbow-fish",
+  "funky-guitar-goose",
+  "silly-purple-llama",
+  "jumping-banana-frog",
+  "wobbly-polka-pig",
+  "cosmic-disco-cat",
+  "jolly-marshmallow-moose",
+  "spicy-taco-turtle",
+  "bouncy-polka-bear",
+  "lucky-cactus-crow",
+  "mellow-mango-monkey",
+  "happy-marble-hedgehog",
+  "dancing-donut-dog",
+  "tiny-marshmallow-moth",
+  "silly-pizza-parrot",
+  "fuzzy-laser-fox",
+  "jelly-disco-deer",
+  "sleepy-cupcake-koala",
+  "funky-drum-duckling",
+  "rainbow-bubble-bat",
+  "giggly-marshmallow-mule",
+  "tiny-bongo-badger",
+  "sparkly-disco-dolphin",
+  "mellow-bubble-bear",
+  "happy-sundae-seal",
+  "silly-bongo-sheep",
+  "jazzy-marshmallow-jay",
+];
+
+const getRandomJamName = () => {
+  return JAM_NAMES[Math.floor(Math.random() * JAM_NAMES.length)];
+};
 
 const onSubmit = async (
   values: z.infer<typeof jamFormSchema>,
@@ -99,6 +102,9 @@ const onSubmit = async (
 
     // If we have a user to invite, create the jam invite
     if (inviteUserEmail) {
+      console.log("Inviting user to jam");
+      console.log("requesterEmail", session?.user?.email);
+      console.log("respondantEmail", inviteUserEmail);
       const inviteResponse = await fetch("/api/createInvite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -189,7 +195,10 @@ export function CreateJamForm({
             <FormItem>
               <FormLabel>Location</FormLabel>
               <FormControl>
-                <Input placeholder="Enter location (e.g., Studio A, 123 Music St)" {...field} />
+                <Input
+                  placeholder="Enter location (e.g., Studio A, 123 Music St)"
+                  {...field}
+                />
               </FormControl>
               <FormDescription>
                 Where will the jam session take place?
@@ -206,10 +215,7 @@ export function CreateJamForm({
             <FormItem>
               <FormLabel>Date & Time</FormLabel>
               <FormControl>
-                <Input 
-                  type="datetime-local" 
-                  {...field} 
-                />
+                <Input type="datetime-local" {...field} />
               </FormControl>
               <FormDescription>
                 When will the jam session happen?
@@ -226,13 +232,15 @@ export function CreateJamForm({
             <FormItem>
               <FormLabel>Capacity</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  min="1" 
-                  max="100" 
+                <Input
+                  type="number"
+                  min="1"
+                  max="100"
                   placeholder="5"
                   {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    field.onChange(parseInt(e.target.value) || 0)
+                  }
                 />
               </FormControl>
               <FormDescription>
