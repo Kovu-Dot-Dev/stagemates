@@ -10,8 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JamCard from "@/components/jamCard";
 import { Jam } from "@/components/jamCard";
 import { JamModal } from "@/components/jamCard";
+import CTACard from "@/components/ctaCard";
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -121,19 +122,37 @@ export default function Home() {
             </Button>
           )}
         </div>
+        <Button variant="outline" size="sm" onClick={() => signOut()}>
+          Sign out
+        </Button>
       </div>
 
       {/* Tabs */}
       <div className="w-full max-w-4xl mx-auto flex-1">
-        <Tabs defaultValue="musicians" className="w-full flex justify-center">
+        <Tabs defaultValue="jams" className="w-full flex justify-center">
           <TabsList className="grid w-1/3 mx-auto grid-cols-2">
-            <TabsTrigger value="musicians" className="cursor-pointer">
-              Musicians
-            </TabsTrigger>
             <TabsTrigger value="jams" className="cursor-pointer">
               Jams
             </TabsTrigger>
+            <TabsTrigger value="musicians" className="cursor-pointer">
+              Musicians
+            </TabsTrigger>
           </TabsList>
+
+          <div className="flex gap-4">
+            <CTACard
+              title="Create a Jam"
+              description="Create a jam to connect with other musicians"
+              buttonText="Create Jam"
+              onButtonClick={() => router.push("/create-jam")}
+            />
+            <CTACard
+              title="Find Jam Members"
+              description="Find musicians to join your jam"
+              buttonText="Find Members"
+              onButtonClick={() => router.push("/create-jam")}
+            />
+          </div>
 
           <TabsContent value="musicians" className="space-y-6 mt-6">
             {/* Search */}
@@ -188,7 +207,7 @@ export default function Home() {
             <JamModal
               show={showModal}
               onClose={() => setShowModal(false)}
-              jam={currentJam}
+              jam={currentJam!}
             />
           </TabsContent>
         </Tabs>

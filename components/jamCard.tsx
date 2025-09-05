@@ -22,7 +22,7 @@ export interface Jam {
   created_at: string;
 }
 
-export function JamModal({ show, onClose, jam }) {
+export function JamModal({ show, onClose, jam }: { show: boolean, onClose: () => void, jam: Jam }) {
   if (!show) return null;
   return (
     // use shadcnui components to make a modal
