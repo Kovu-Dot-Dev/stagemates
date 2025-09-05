@@ -9,20 +9,19 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { User } from "@/app/page";
-export interface Jam {
-  id: number;
-  name: string;
-  date?: string;
-  time?: string;
-  location: string;
-  attendees: User[];
-  created_at: string;
-}
+import { User, Jam } from "@/types";
 
-export function JamModal({ show, onClose, jam }) {
+
+
+export function JamModal({
+  show,
+  onClose,
+  jam,
+}: {
+  show: boolean;
+  onClose: () => void;
+  jam: Jam;
+}) {
   if (!show) return null;
   return (
     // use shadcnui components to make a modal
@@ -31,32 +30,27 @@ export function JamModal({ show, onClose, jam }) {
       justify-center z-50"
     >
       <div className="bg-white rounded-lg p-6 w-96">
-        <h2 className="text-2xl font-bold mb-4">{jam.name}</h2>
+        <h2 className="text-2xl font-bold mb-4">{jam.jam_name}</h2>
         <p className="mb-2">
           <span className="font-semibold">Location:</span> {jam.location}
         </p>
         <p className="mb-4">
           <span className="font-semibold">Happening:</span>{" "}
-          {jam.date
-            ? new Date(jam.date).toLocaleDateString()
+          {jam.date_happening
+            ? new Date(jam.date_happening).toLocaleDateString()
             : new Date().toLocaleDateString()}
-          {jam.time
-            ? ` at ${jam.time}`
-            : ` at ${new Date().toLocaleTimeString()}`}
+
         </p>
         <div className="mb-4">
           <span className="font-semibold">Attendees:</span>
           <div className="mt-2 flex flex-wrap gap-2">
-            {jam.attendees?.length > 0 &&
-              jam.attendees.map((attendee: User) => (
-                <Badge key={attendee.id} variant="default">
-                  {attendee.name}
-                </Badge>
-              ))}
+            <Badge variant="default">ryan</Badge>
+            <Badge variant="default">tinaesh</Badge>
           </div>
           <div>
             {/* capacity */}
-            <span className="font-semibold">Capacity:</span> 10
+            <span className="font-semibold">Capacity:</span> 
+            {jam.capacity}
           </div>
           <Button onClick={onClose}>Close</Button>
           {/* Request to join button */}
@@ -93,13 +87,13 @@ export default function JamCard({
           <div className="w-48 h-32 flex-shrink-0 overflow-hidden rounded-l-lg">
             <img
               src={imageUrl}
-              alt={jam.name}
+              alt={jam.jam_name}
               className="w-full h-full object-cover"
             />
           </div>
         )}
         <CardHeader className="flex-1">
-          <CardTitle>{jam.name}</CardTitle>
+          <CardTitle>{jam.jam_name}</CardTitle>
           <CardDescription>
             <Badge variant="outline">{jam.location}</Badge>
           </CardDescription>

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EmbedContent from "@/components/embedContent";
+import { CreateJamForm } from "@/components/createBandForm";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,59 +23,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-
-interface UserProfile {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  description?: string;
-  instruments: string[];
-  spotify_link?: string;
-  soundcloud_link?: string;
-  instagram_link?: string;
-  tiktok_link?: string;
-}
+} from "@/components/ui/dialog";  
+import { UserProfile } from "@/types";
 
 type DialogType = "create" | "invite" | null;
 
-const JAM_NAMES = [
-  "tiny-dancing-duck",
-  "happy-fuzzy-bunny",
-  "sleepy-polka-panda",
-  "shiny-rainbow-fish",
-  "funky-guitar-goose",
-  "silly-purple-llama",
-  "jumping-banana-frog",
-  "wobbly-polka-pig",
-  "cosmic-disco-cat",
-  "jolly-marshmallow-moose",
-  "spicy-taco-turtle",
-  "bouncy-polka-bear",
-  "lucky-cactus-crow",
-  "mellow-mango-monkey",
-  "happy-marble-hedgehog",
-  "dancing-donut-dog",
-  "tiny-marshmallow-moth",
-  "silly-pizza-parrot",
-  "fuzzy-laser-fox",
-  "jelly-disco-deer",
-  "sleepy-cupcake-koala",
-  "funky-drum-duckling",
-  "rainbow-bubble-bat",
-  "giggly-marshmallow-mule",
-  "tiny-bongo-badger",
-  "sparkly-disco-dolphin",
-  "mellow-bubble-bear",
-  "happy-sundae-seal",
-  "silly-bongo-sheep",
-  "jazzy-marshmallow-jay",
-];
-
-const getRandomJamName = () => {
-  return JAM_NAMES[Math.floor(Math.random() * JAM_NAMES.length)];
-};
 
 export default function ProfilePage() {
   const params = useParams();
@@ -85,7 +38,6 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [dialogType, setDialogType] = useState<DialogType>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [jamName, setJamName] = useState(getRandomJamName());
 
   const handleDialogOpen = (type: DialogType) => {
     if (!session) {
@@ -96,55 +48,6 @@ export default function ProfilePage() {
     setIsDialogOpen(true);
   };
 
-  const createJam = async () => {
-    if (!jamName.trim()) {
-      alert("Please enter a jam name");
-      return;
-    }
-
-    try {
-      // First, create the jam
-      const jamResponse = await fetch("/api/createJam", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jamName: jamName,
-        }),
-      });
-
-      if (!jamResponse.ok) {
-        const result = await jamResponse.json();
-        alert(result.error || "Failed to create jam");
-        return;
-      }
-
-      const jamResult = await jamResponse.json();
-      const jamId = jamResult.data.id;
-
-      // Then, create the jam invite
-      const inviteResponse = await fetch("/api/createInvite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jamId: jamId,
-          requesterEmail: session?.user?.email,
-          respondantEmail: user?.email,
-        }),
-      });
-
-      if (inviteResponse.ok) {
-        setJamName(getRandomJamName());
-        setIsDialogOpen(false);
-        alert("Jam and invite created successfully!");
-      } else {
-        const inviteResult = await inviteResponse.json();
-        alert(inviteResult.error || "Jam created but failed to create invite");
-      }
-    } catch (error) {
-      console.error("Error creating jam:", error);
-      alert("Failed to create jam");
-    }
-  };
 
   const getDialogContent = () => {
     switch (dialogType) {
@@ -153,33 +56,10 @@ export default function ProfilePage() {
           title: "Create New Jam Session",
           description: `Create a new jam session and invite ${user?.name} to join. You can set the date, time, location, and musical style for the session.`,
           content: (
-            <div className="space-y-4">
-              <p className="text-sm ">
-                Fill in the details below to get started.
-              </p>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="jamName">Jam Session Name</Label>
-                  <Input
-                    id="jamName"
-                    type="text"
-                    placeholder="Enter jam session name..."
-                    value={jamName}
-                    onChange={(e) => setJamName(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                {/* the create jam function creates a jam and a jam invite in the DB*/}
-                <Button onClick={createJam}>Create Jam</Button>
-              </div>
-            </div>
+            <CreateJamForm
+              inviteUserEmail={user?.email}
+              onSuccess={() => setIsDialogOpen(false)}
+            />
           ),
         };
       case "invite":
