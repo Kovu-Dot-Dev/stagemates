@@ -8,35 +8,62 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { User } from "@/app/page";
 export interface Jam {
-  created_at: string;
   id: number;
   name: string;
+  date?: string;
+  time?: string;
   location: string;
+  attendees: User[];
+  created_at: string;
 }
 
 export function JamModal({ show, onClose, jam }) {
   if (!show) return null;
   return (
-    <div className="fixed inset-0 bg-gray-100/75 flex items-center justify-center z-50">
+    // use shadcnui components to make a modal
+    <div
+      className="fixed inset-0 bg-gray-100/75 flex items-center
+      justify-center z-50"
+    >
       <div className="bg-white rounded-lg p-6 w-96">
         <h2 className="text-2xl font-bold mb-4">{jam.name}</h2>
         <p className="mb-2">
-          <strong>Location:</strong> {jam.location}
+          <span className="font-semibold">Location:</span> {jam.location}
         </p>
         <p className="mb-4">
-          <strong>Created At:</strong>{" "}
-          {new Date(jam.created_at).toLocaleString()}
+          <span className="font-semibold">Happening:</span>{" "}
+          {jam.date
+            ? new Date(jam.date).toLocaleDateString()
+            : new Date().toLocaleDateString()}
+          {jam.time
+            ? ` at ${jam.time}`
+            : ` at ${new Date().toLocaleTimeString()}`}
         </p>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={onClose}
-        >
-          Close
-        </button>
+        <div className="mb-4">
+          <span className="font-semibold">Attendees:</span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {jam.attendees?.length > 0 &&
+              jam.attendees.map((attendee: User) => (
+                <Badge key={attendee.id} variant="default">
+                  {attendee.name}
+                </Badge>
+              ))}
+          </div>
+          <div>
+            {/* capacity */}
+            <span className="font-semibold">Capacity:</span> 10
+          </div>
+          <Button onClick={onClose}>Close</Button>
+          {/* Request to join button */}
+          <Button variant="outline" className="mt-4" onClick={() => {}}>
+            Request to Join
+          </Button>
+        </div>
       </div>
     </div>
   );
