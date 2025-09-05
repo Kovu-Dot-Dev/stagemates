@@ -150,7 +150,7 @@ export default function ProfilePage() {
           description: `Create a new jam session and invite ${user?.name} to join. You can set the date, time, location, and musical style for the session.`,
           content: (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm ">
                 Fill in the details below to get started.
               </p>
               <div className="space-y-4">
@@ -184,7 +184,7 @@ export default function ProfilePage() {
           description: `Invite ${user?.name} to join one of your existing jam sessions. Select from your upcoming sessions below.`,
           content: (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm ">
                 Choose an existing jam session to invite {user?.name} to join.
               </p>
 
@@ -256,7 +256,7 @@ export default function ProfilePage() {
           <h1 className="text-2xl font-bold text-foreground">
             Profile Not Found
           </h1>
-          <p className="text-muted-foreground">{error}</p>
+          <p className="">{error}</p>
           <Button onClick={() => router.push("/")} variant="default">
             Back to Home
           </Button>
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                   </Dialog>
                 </div>
               </CardTitle>
-              <p className="text-xl text-muted-foreground">@{user.username}</p>
+              <p className="text-xl ">@{user.username}</p>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -338,7 +338,7 @@ export default function ProfilePage() {
             {user.description && (
               <div>
                 <h3 className="text-lg font-semibold mb-2">About</h3>
-                <p className="text-muted-foreground">{user.description}</p>
+                <p className="">{user.description}</p>
               </div>
             )}
 
@@ -369,7 +369,7 @@ export default function ProfilePage() {
             {/* Contact */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Contact</h3>
-              <p className="text-muted-foreground">{user.email}</p>
+              <p className="">{user.email}</p>
             </div>
           </CardContent>
         </Card>
