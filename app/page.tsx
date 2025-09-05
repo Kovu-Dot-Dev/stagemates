@@ -8,19 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JamCard from "@/components/jamCard";
+import { Jam } from "@/components/jamCard";
 
 interface User {
   id: number;
   name: string;
   email: string;
   instruments: string[];
-}
-
-interface Jam {
-  created_at: string;
-  id: number;
-  jam_name: string;
-  location: string;
 }
 
 export default function Home() {
@@ -176,13 +170,7 @@ export default function Home() {
           <TabsContent value="jams" className="space-y-6 mt-6">
             <div className="flex flex-col gap-4">
               {jams.length > 0 ? (
-                jams.map((jam) => (
-                  <JamCard
-                    key={jam.id}
-                    jamName={jam.jam_name}
-                    location={jam.location || "TBC"}
-                  />
-                ))
+                jams.map((jam) => <JamCard key={jam.id} jam={jam} />)
               ) : (
                 <p className="text-center text-muted-foreground">
                   No jams found
