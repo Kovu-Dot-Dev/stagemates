@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EmbedContent from "@/components/embedContent";
-import { CreateJamForm } from "@/components/createBandForm";
+import { CreateJamForm } from "@/components/createJamForm";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +23,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";  
+} from "@/components/ui/dialog";
 import { UserProfile } from "@/types";
 
 type DialogType = "create" | "invite" | null;
-
 
 export default function ProfilePage() {
   const params = useParams();
@@ -47,7 +46,6 @@ export default function ProfilePage() {
     setDialogType(type);
     setIsDialogOpen(true);
   };
-
 
   const getDialogContent = () => {
     switch (dialogType) {
