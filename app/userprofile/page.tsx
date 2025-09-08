@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import EmbedContent from "@/components/embedContent";
 import { ProfileForm } from "@/components/signUpForm";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 import { UserProfile, Jam } from "@/types";
 
 interface JamWithParticipants extends Jam {
@@ -22,6 +24,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageState, setPageState] = useState<"view" | "edit">("view");
+  const [invites, setInvites] = useState<any[]>([]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -30,7 +33,7 @@ export default function ProfilePage() {
       return;
     }
 
-    const fetchUser = async (email: string) => {
+    const fetchData = async (email: string) => {
       console.log("Fetching user with email:", email);
       const response = await fetch(
         `/api/userbyemail?email=${encodeURIComponent(email)}`,
@@ -47,6 +50,22 @@ export default function ProfilePage() {
         await fetchUserJams(result.data.id);
       } else {
         setError(result.error || "User not found");
+      }
+
+      console.log("user id", result.data.id);
+      const response_invites = await fetch(
+        `/api/invites?respondant_id=${result.data.id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const result_invites = await response_invites.json();
+      if (result_invites.data) {
+        console.log("respondant data", result_invites.data);
+        setInvites(result_invites.data);
+      } else {
+        setError(result_invites.error || "Invites not found");
       }
 
       setLoading(false);
@@ -113,9 +132,25 @@ export default function ProfilePage() {
     };
 
     if (session && session.user && session.user.email) {
-      fetchUser(session.user.email);
+      fetchData(session.user.email);
     }
   }, [session, status, router]);
+
+  const handleAcceptInvite = async (inviteId: string) => {
+    console.log("Accepting invite:", inviteId);
+    const response = await fetch(`/api/acceptInvite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inviteId }),
+    });
+    const result = await response.json();
+    if (result.data) {
+      console.log("Invite accepted successfully");
+      alert("Invite accepted successfully!");
+    } else {
+      setError(result.error || "Invite not accepted");
+    }
+  };
 
   if (status === "loading" || loading) {
     return (
@@ -187,6 +222,36 @@ export default function ProfilePage() {
                   <h3 className="text-lg font-semibold mb-2">About</h3>
                   <p className="">{user.description}</p>
                 </div>
+              )}
+              {invites.length > 0 && (
+                <Alert variant="destructive">
+                  <AlertCircleIcon />
+                  <AlertTitle>Invites</AlertTitle>
+                  <AlertDescription>
+                    <p>
+                      You have {invites.length} invite{" "}
+                      {invites.length > 1 ? "s" : ""}
+                    </p>
+                    <div>
+                      {invites.map((invite) => (
+                        <div
+                          key={invite.id}
+                          className="flex items-center justify-between"
+                        >
+                          <p>{invite.requester.name}</p>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleAcceptInvite(invite.id)}
+                            className="ml-2 text-primary"
+                          >
+                            Accept
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </AlertDescription>
+                </Alert>
               )}
 
               {/* Instruments */}
