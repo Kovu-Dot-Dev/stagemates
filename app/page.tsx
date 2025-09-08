@@ -33,6 +33,43 @@ export default function Home() {
   useEffect(() => {
     console.log("session", session);
     console.log("loading", loading);
+
+    const handleUser = async () => {
+      console.log(session);
+      if (session?.user?.email && session?.user?.name) {
+        // Check if user exists
+        const checkResponse = await fetch(
+          `/api/userbyemail?email=${encodeURIComponent(session.user.email)}`
+        );
+        const checkResult = await checkResponse.json();
+
+        if (!checkResult.data) {
+          // User doesn't exist, create them
+          const createResponse = await fetch("/api/adduser", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: session.user.email,
+              name: session.user.name,
+              username: null,
+              description: null,
+              instruments: [],
+              spotifyLink: null,
+              soundcloudLink: null,
+              instagramLink: null,
+              tiktokLink: null,
+            }),
+          });
+
+          if (createResponse.ok) {
+            console.log("User created successfully");
+          } else {
+            console.error("Failed to create user");
+          }
+        }
+      }
+    };
+
     // Fetch users from database
     const fetchUsers = async () => {
       try {
@@ -78,6 +115,7 @@ export default function Home() {
 
     if (session == null || session) {
       console.log("session is not null");
+      handleUser(); // Handle user creation/checking
       fetchJams();
       fetchUsers();
       fetchBands();
@@ -179,7 +217,7 @@ export default function Home() {
                     key={user.id}
                     userId={user.id}
                     title={user.name}
-                    instruments={user.instruments}
+                    instruments={user.instruments ?? []}
                   />
                 ))
               ) : searchTerm ? (
