@@ -22,12 +22,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";  
+} from "@/components/ui/dialog";
 import { UserProfile } from "@/types";
 
-type DialogType = "create" | "invite" | null;
 
+type DialogType = "create" | "invite" | null;
 
 export default function ProfilePage() {
   const params = useParams();
@@ -47,7 +46,6 @@ export default function ProfilePage() {
     setDialogType(type);
     setIsDialogOpen(true);
   };
-
 
   const getDialogContent = () => {
     switch (dialogType) {
@@ -214,6 +212,7 @@ export default function ProfilePage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
+
             {/* Description */}
             {user.description && (
               <div>

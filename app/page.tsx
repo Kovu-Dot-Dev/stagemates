@@ -12,10 +12,6 @@ import { Jam, User } from "@/types";
 import { JamModal } from "@/components/jamCard";
 import CTACard from "@/components/ctaCard";
 
-
-
-
-
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -27,6 +23,14 @@ export default function Home() {
   const [currentJam, setCurrentJam] = useState<Jam | null>(null);
 
   useEffect(() => {
+    const fetchBands = async () => {
+      const response = await fetch("/api/bands");
+      const result = await response.json();
+      if (result.data) {
+        console.log("bands fetched", result.data);
+      }
+    };
+    fetchBands();
     console.log("session", session);
     console.log("loading", loading);
     // Fetch users from database
@@ -134,10 +138,7 @@ export default function Home() {
           </TabsList>
 
           <div className="flex gap-4">
-            <CTACard
-              title="Create a Jam"
-              buttonText="Create Jam"
-            />
+            <CTACard title="Create a Jam" buttonText="Create Jam" />
           </div>
 
           <TabsContent value="musicians" className="space-y-6 mt-6">

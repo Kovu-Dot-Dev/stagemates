@@ -55,6 +55,7 @@ export async function POST(req: Request) {
         requester_id: requesterData.id,
         respondant_id: respondantData.id,
         created_at: new Date().toISOString(),
+        accepted: false,
       })
       .select()
       .single();
