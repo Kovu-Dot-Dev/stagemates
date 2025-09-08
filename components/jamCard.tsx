@@ -9,9 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Jam } from "@/types";
-
-
+import { Jam } from "@/types";
+import { useEffect, useState } from "react";
 
 export function JamModal({
   show,
@@ -23,6 +22,22 @@ export function JamModal({
   jam: Jam;
 }) {
   if (!show) return null;
+  const [attendees, setAttendees] = useState<any[]>([]);
+
+  useEffect(() => {
+    console.log("jam", jam);
+    const getAttendees = async () => {
+      const response = await fetch(`/api/getAttendees?jamId=${jam.id}`);
+      const result = await response.json();
+
+      console.log("attendees", result);
+      if (result.data) {
+        setAttendees(result.data);
+      }
+    };
+    getAttendees();
+    console.log(jam);
+  }, [jam]);
   return (
     // use shadcnui components to make a modal
     <div
@@ -39,17 +54,16 @@ export function JamModal({
           {jam.date_happening
             ? new Date(jam.date_happening).toLocaleDateString()
             : new Date().toLocaleDateString()}
-
         </p>
         <div className="mb-4">
           <span className="font-semibold">Attendees:</span>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <Badge variant="default">ryan</Badge>
-            <Badge variant="default">tinaesh</Badge>
-          </div>
+          {attendees.map((attendee) => (
+            <Badge variant="default" key={attendee.id}>{attendee.name}</Badge>
+          ))}
+
           <div>
             {/* capacity */}
-            <span className="font-semibold">Capacity:</span> 
+            <span className="font-semibold">Capacity:</span>
             {jam.capacity}
           </div>
           <Button onClick={onClose}>Close</Button>
@@ -77,6 +91,18 @@ export default function JamCard({
     // router.push(`/jams/${jam.id}`);
     handleClick?.();
   };
+  const [attendees, setAttendees] = useState<any[]>([]);
+
+  useEffect(() => {
+    const getAttendees = async () => {
+      const response = await fetch(`/api/getAttendees?jamId=${jam.id}`);
+      const result = await response.json();
+      if (result.data) {
+        setAttendees(result.data);
+      }
+    };
+    getAttendees();
+  }, [jam]);
   return (
     <Card
       className="w-full cursor-pointer hover:shadow-lg transition-shadow"
@@ -96,6 +122,11 @@ export default function JamCard({
           <CardTitle>{jam.jam_name}</CardTitle>
           <CardDescription>
             <Badge variant="outline">{jam.location}</Badge>
+          </CardDescription>
+          <CardDescription>
+            {attendees.map((attendee) => (
+              <Badge variant="outline" key={attendee.id}>{attendee.name}</Badge>
+            ))}
           </CardDescription>
         </CardHeader>
       </div>
