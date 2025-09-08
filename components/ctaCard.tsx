@@ -2,6 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -10,18 +12,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CreateJamForm } from "@/components/createBandForm";
+import { CreateJamForm } from "@/components/createJamForm";
 
 interface CTACardProps {
   title: string;
   buttonText: string;
 }
 
-const onButtonClick = () => {
-  console.log("Button clicked");
-};
-
 export default function CTACard({ title, buttonText }: CTACardProps) {
+  const { data: session } = useSession();
+
+  const router = useRouter();
+  const onButtonClick = () => {
+    // route to login if not logged in
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto flex">
       <CardHeader className="text-center">
@@ -35,13 +44,7 @@ export default function CTACard({ title, buttonText }: CTACardProps) {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
-              <DialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </DialogDescription>
-            </DialogHeader>
+            <DialogTitle>Create a New Jam Session</DialogTitle>
             <CreateJamForm />
           </DialogContent>
         </Dialog>
