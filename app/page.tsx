@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import HomeCard from "@/components/homeCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JamCard from "@/components/jamCard";
 import { Jam, User } from "@/types";
@@ -16,7 +17,7 @@ interface Band {
   id: number;
   name: string;
   genre: string;
-  members: number;
+  members: User[];
 }
 
 export default function Home() {
@@ -28,7 +29,7 @@ export default function Home() {
   const [jams, setJams] = useState<Jam[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentJam, setCurrentJam] = useState<Jam | null>(null);
-  const [bands, setBands] = useState([]);
+  const [bands, setBands] = useState<Band[]>([]);
 
   useEffect(() => {
     console.log("session", session);
@@ -102,7 +103,28 @@ export default function Home() {
         const response = await fetch("/api/bands");
         const result = await response.json();
         if (result.data) {
-          setBands(result.data);
+          // Fetch members for each band
+          const bandsWithMembers = await Promise.all(
+            result.data.map(async (band: Band) => {
+              try {
+                const memberResponse = await fetch(`/api/user?bandId=${band.id}`);
+                const memberResult = await memberResponse.json();
+                return {
+                  ...band,
+                  members: memberResult.data || []
+                };
+              } catch (error) {
+                console.error(`Error fetching members for band ${band.id}:`, error);
+                return {
+                  ...band,
+                  members: []
+                };
+              }
+            })
+          );
+          
+          console.log("bands with members", bandsWithMembers);
+          setBands(bandsWithMembers);
         }
       } catch (error) {
         console.error("Error fetching bands:", error);
@@ -262,13 +284,19 @@ export default function Home() {
                     className="p-4 border border-gray-200 rounded-lg shadow-sm"
                   >
                     <h2 className="text-xl font-semibold mb-2">{band.name}</h2>
-                    <p className="mb-1">
+                    <p className="mb-3">
                       <span className="font-semibold">Genre:</span> {band.genre}
                     </p>
-                    <p>
-                      <span className="font-semibold">Members:</span>{" "}
-                      {band.members}
-                    </p>
+                    <div>
+                      <span className="font-semibold mb-2 block">Members:</span>
+                      <div className="flex flex-wrap gap-2">
+                        {band.members.map(member => (
+                          <Badge key={member.id} variant="secondary">
+                            {member.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 ))
               ) : (

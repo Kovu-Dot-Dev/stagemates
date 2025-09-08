@@ -105,7 +105,7 @@ export default function ProfilePage() {
       try {
         // Await params before using them
         const resolvedParams = await params;
-        const response = await fetch(`/api/user/${resolvedParams.id}`);
+        const response = await fetch(`/api/user?userId=${resolvedParams.id}`);
         const result = await response.json();
 
         if (response.ok) {

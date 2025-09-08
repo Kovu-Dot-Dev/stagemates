@@ -5,9 +5,55 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const jamId = searchParams.get('jamId');
   const userId = searchParams.get('userId');
+  const bandId = searchParams.get('bandId');
 
   // Controller seems like its doing alot of work, to retro
-  if (jamId) {
+  if (bandId) {
+    const bandIdNum = parseInt(bandId);
+    
+    if (isNaN(bandIdNum)) {
+      return new Response(JSON.stringify({ error: "Invalid band ID provided" }), {
+        status: 400,
+      });
+    }
+
+    console.log("Fetching members for band ID:", bandIdNum);
+
+    // First, get user IDs from band_members table
+    const { data: bandMembers, error: membersError } = await supabaseServer
+      .from("band_members")
+      .select("user_id")
+      .eq("band_id", bandIdNum);
+
+    if (membersError) {
+      console.log("Database error fetching band members:", membersError);
+      return new Response(JSON.stringify({ error: membersError.message }), {
+        status: 400,
+      });
+    }
+
+    if (!bandMembers || bandMembers.length === 0) {
+      return new Response(JSON.stringify({ data: [] }), { status: 200 });
+    }
+
+    // Extract user IDs
+    const userIds = bandMembers.map(member => member.user_id);
+
+    // Then, get user data from users table
+    const { data: users, error: usersError } = await supabaseServer
+      .from("users")
+      .select("*")
+      .in("id", userIds);
+
+    if (usersError) {
+      console.log("Database error fetching users:", usersError);
+      return new Response(JSON.stringify({ error: usersError.message }), {
+        status: 400,
+      });
+    }
+
+    return new Response(JSON.stringify({ data: users }), { status: 200 });
+  } else if (jamId) {
     console.log(`Fetching participants for jam ID: ${jamId}`);
     
     // Get accepted invites for this jam
@@ -86,7 +132,7 @@ export async function GET(req: Request) {
       status: 200 
     });
   } else {
-    return new Response(JSON.stringify({ error: "Either jamId or userId parameter is required" }), {
+    return new Response(JSON.stringify({ error: "Either jamId, userId, or bandId parameter is required" }), {
       status: 400,
     });
   }
