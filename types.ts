@@ -1,6 +1,6 @@
 
 export interface Jam {
-  id?: number;
+  id: number;
   jam_name: string;
   date_happening: string;
   location: string;
@@ -15,7 +15,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  instruments: string[];
+  instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
 }
 
 export interface UserProfile {
@@ -24,9 +24,32 @@ export interface UserProfile {
     username: string;
     email: string;
     description?: string;
-    instruments: string[];
+    instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
     spotify_link?: string;
     soundcloud_link?: string;
     instagram_link?: string;
     tiktok_link?: string;
+  }
+
+  export interface UserProfile {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    description?: string;
+    instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
+    spotify_link?: string;
+    soundcloud_link?: string;
+    instagram_link?: string;
+    tiktok_link?: string;
+  }
+  
+  export interface Jam {
+    id: number;
+    jam_name: string;
+    capacity: number;
+    location: string;
+    owner_email: string;
+    created_at: string;
+    date_happening: string;
   }

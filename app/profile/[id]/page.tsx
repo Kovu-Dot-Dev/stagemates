@@ -24,7 +24,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { UserProfile } from "@/types";
+import { UserProfile, Jam } from "@/types";
+
+interface JamWithParticipants extends Jam {
+  participants: UserProfile[];
+}
 
 type DialogType = "create" | "invite" | null;
 
@@ -33,6 +37,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [pastJams, setPastJams] = useState<JamWithParticipants[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dialogType, setDialogType] = useState<DialogType>(null);
@@ -98,11 +103,13 @@ export default function ProfilePage() {
 
     const fetchUser = async () => {
       try {
-        const response = await fetch(`/api/user/${params.id}`);
+        const response = await fetch(`/api/user?userId=${params.id}`);
         const result = await response.json();
 
         if (response.ok) {
           setUser(result.data);
+          // Fetch jams for this user
+          await fetchUserJams(result.data.id);
         } else {
           setError(result.error || "User not found");
         }
@@ -111,6 +118,66 @@ export default function ProfilePage() {
         setError("Failed to load user profile");
       } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchUserJams = async (userId: number) => {
+      console.log("Fetching jams for user ID:", userId);
+      try {
+        const response = await fetch(`/api/jams?id=${userId}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const result = await response.json();
+        if (result.data) {
+          console.log("User jams result:", result.data);
+          // Filter jams to only include past jams (date_happening is before today)
+          const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+          const filteredPastJams = result.data.filter(
+            (jam: Jam) => jam.date_happening < today
+          );
+          console.log("Filtered past jams:", filteredPastJams);
+          
+          // Fetch participants for each jam
+          const jamsWithParticipants = await Promise.all(
+            filteredPastJams.map(async (jam: Jam) => {
+              const participants = await fetchJamParticipants(jam.id);
+              return {
+                ...jam,
+                participants
+              };
+            })
+          );
+          
+          setPastJams(jamsWithParticipants);
+        } else {
+          console.error("Error fetching jams:", result.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user jams:", error);
+      }
+    };
+
+    const fetchJamParticipants = async (jamId: number): Promise<UserProfile[]> => {
+      console.log("Fetching participants for jam ID:", jamId);
+      try {
+        const response = await fetch(`/api/user?jamId=${jamId}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const result = await response.json();
+        if (result.data) {
+          console.log(`Participants for jam ${jamId}:`, result.data);
+          return result.data;
+        } else {
+          console.error("Error fetching jam participants:", result.error);
+          return [];
+        }
+      } catch (error) {
+        console.error("Error fetching jam participants:", error);
+        return [];
       }
     };
 
@@ -224,7 +291,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-lg font-semibold mb-3">Instruments</h3>
               <div className="flex flex-wrap gap-2">
-                {user.instruments.map((instrument, index) => (
+                {user.instruments?.map((instrument, index) => (
                   <Badge key={index} variant="secondary" className="text-sm">
                     {instrument}
                   </Badge>
@@ -248,6 +315,67 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Contact</h3>
               <p className="">{user.email}</p>
+            </div>
+
+            {/* Past Jams */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Past Jams</h3>
+              {pastJams.length > 0 ? (
+                <div className="space-y-4">
+                  {pastJams.map((jam) => (
+                    <div key={jam.id} className="border rounded-lg p-4 bg-card">
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="font-semibold text-lg">{jam.jam_name}</h4>
+                        <Badge variant="outline" className="text-xs">
+                          ID: {jam.id}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">📍 Location:</span>
+                            <span className="text-sm">{jam.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">👥 Capacity:</span>
+                            <span className="text-sm">{jam.capacity} people</span>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">📅 Jam Date:</span>
+                            <span className="text-sm">
+                              {new Date(jam.date_happening).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">👤 Owner:</span>
+                            <span className="text-sm">{jam.owner_email}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Participants */}
+                      {jam.participants && jam.participants.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <h5 className="text-sm font-medium mb-2">🎵 Participants:</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {jam.participants.map((participant) => (
+                              <Badge key={participant.id} variant="secondary" className="text-xs">
+                                {participant.name} (@{participant.username})
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No past jams found.</p>
+              )}
             </div>
           </CardContent>
         </Card>
