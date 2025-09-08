@@ -89,7 +89,7 @@ export default function Home() {
     };
 
     const fetchJams = async () => {
-      const response = await fetch("/api/getJams");
+      const response = await fetch("/api/jams");
       const result = await response.json();
       if (result.data) {
         console.log(result.data);
