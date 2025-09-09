@@ -255,7 +255,7 @@ export default function ProfilePage() {
                   Quisquam, quos.
                 </DialogDescription>
               </DialogHeader>
-              <CreateBandForm users={users}/>
+              <CreateBandForm users={users} user={user}/>
             </DialogContent>
           </Dialog>
         </div>
