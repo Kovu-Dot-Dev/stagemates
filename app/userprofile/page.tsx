@@ -10,7 +10,7 @@ import EmbedContent from "@/components/embedContent";
 import { ProfileForm } from "@/components/signUpForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-import { UserProfile, Jam, User } from "@/types";
+import { UserProfile, Jam, User, Invite } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +33,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageState, setPageState] = useState<"view" | "edit">("view");
-  const [invites, setInvites] = useState<any[]>([]);
+  const [invites, setInvites] = useState<Invite[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function ProfilePage() {
       );
       const result_invites = await response_invites.json();
       if (result_invites.data) {
-        console.log("respondant data", result_invites.data);
+        console.log("xx respondant data", result_invites.data);
         setInvites(result_invites.data);
       } else {
         setError(result_invites.error || "Invites not found");
@@ -292,11 +292,11 @@ export default function ProfilePage() {
                           key={invite.id}
                           className="flex items-center justify-between"
                         >
-                          <p>{invite.requester.name}</p>
+                          <p>{invite.requester?.name}</p>
                           <Button
                             variant="default"
                             size="sm"
-                            onClick={() => handleAcceptInvite(invite.id)}
+                            onClick={() => handleAcceptInvite(invite.id.toString())}
                             className="ml-2 text-primary"
                           >
                             Accept

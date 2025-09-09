@@ -60,3 +60,15 @@ export interface UserProfile {
     genre: string;
     members: User[];
   }
+
+  export interface Invite {
+    id: number;
+    jam_id: number;
+    requester_id: number;
+    respondant_id: number;
+    accepted: boolean;
+    created_at: string;
+    requester?: User;
+  }
+  
+  

@@ -1,9 +1,6 @@
 import {
   Card,
-  CardAction,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -11,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Jam } from "@/types";
 import { useEffect, useState } from "react";
+import { User} from "@/types";
 
 export function JamModal({
   show,
@@ -21,8 +19,8 @@ export function JamModal({
   onClose: () => void;
   jam: Jam;
 }) {
-  if (!show) return null;
-  const [attendees, setAttendees] = useState<any[]>([]);
+
+  const [attendees, setAttendees] = useState<User[]>([]);
 
   useEffect(() => {
     console.log("jam", jam);
@@ -38,6 +36,8 @@ export function JamModal({
     getAttendees();
     console.log(jam);
   }, [jam]);
+
+  if (!show) return null;
   return (
     // use shadcnui components to make a modal
     <div
@@ -58,7 +58,9 @@ export function JamModal({
         <div className="mb-4">
           <span className="font-semibold">Attendees:</span>
           {attendees.map((attendee) => (
-            <Badge variant="default" key={attendee.id}>{attendee.name}</Badge>
+            <Badge variant="default" key={attendee.id}>
+              {attendee.name}
+            </Badge>
           ))}
 
           <div>
@@ -91,7 +93,7 @@ export default function JamCard({
     // router.push(`/jams/${jam.id}`);
     handleClick?.();
   };
-  const [attendees, setAttendees] = useState<any[]>([]);
+  const [attendees, setAttendees] = useState<User[]>([]);
 
   useEffect(() => {
     const getAttendees = async () => {
@@ -125,7 +127,9 @@ export default function JamCard({
           </CardDescription>
           <CardDescription>
             {attendees.map((attendee) => (
-              <Badge variant="outline" key={attendee.id}>{attendee.name}</Badge>
+              <Badge variant="outline" key={attendee.id}>
+                {attendee.name}
+              </Badge>
             ))}
           </CardDescription>
         </CardHeader>

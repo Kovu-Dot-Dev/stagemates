@@ -28,6 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { Session } from "next-auth";
 
 const bandFormSchema = z.object({
   bandName: z.string().min(1, "Band name is required"),
@@ -75,8 +77,8 @@ const getRandomBandName = () => {
 
 const onSubmit = async (
   values: z.infer<typeof bandFormSchema>,
-  session: any,
-  router: any,
+  session: Session | null,
+  router: AppRouterInstance,
   onSuccess?: () => void,
   user?: User
 ) => {

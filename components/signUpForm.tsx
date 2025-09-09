@@ -131,7 +131,7 @@ export function ProfileForm({
                 />
               </FormControl>
               <FormDescription>
-                Describe your musical style, experience, or what you're looking
+                Describe your musical style, experience, or what you are looking
                 for.
               </FormDescription>
               <FormMessage />

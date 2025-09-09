@@ -1,5 +1,4 @@
 import { supabaseServer } from "@/lib/supabaseServer";
-import { UserProfile } from "@/types";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
