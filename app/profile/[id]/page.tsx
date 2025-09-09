@@ -301,6 +301,18 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {/* Availability */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Availability</h3>
+              <div className="flex flex-wrap gap-2">
+                {user.availability?.map((day, index) => (
+                  <Badge key={index} variant="secondary" className="text-sm">
+                    {day.charAt(0).toUpperCase() + day.slice(1)}
+                  </Badge>
+                ))}
+              </div>
+            </div>          
+
             {/* Social Links */}
             {socialLinks.length > 0 && (
               <div>

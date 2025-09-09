@@ -29,19 +29,7 @@ export interface UserProfile {
     soundcloud_link?: string;
     instagram_link?: string;
     tiktok_link?: string;
-  }
-
-  export interface UserProfile {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
-    description?: string;
-    instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
-    spotify_link?: string;
-    soundcloud_link?: string;
-    instagram_link?: string;
-    tiktok_link?: string;
+    availability?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
   }
   
   export interface Jam {

@@ -37,6 +37,7 @@ const onSubmit = async (
       soundcloudLink: values.soundcloudLink || null,
       instagramLink: values.instagramLink || null,
       tiktokLink: values.tiktokLink || null,
+      availability: values.availability
     }),
   });
 
@@ -45,6 +46,16 @@ const onSubmit = async (
     router.push("/");
   }
 };
+
+const daysOfWeek = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
 
 const formSchema = z.object({
   username: z.string().optional(),
@@ -56,6 +67,9 @@ const formSchema = z.object({
   soundcloudLink: z.string().url().optional().or(z.literal("")),
   instagramLink: z.string().url().optional().or(z.literal("")),
   tiktokLink: z.string().url().optional().or(z.literal("")),
+  availability: z
+    .array(z.enum(daysOfWeek))
+    .optional(),
 });
 
 interface ProfileFormProps {
@@ -66,6 +80,7 @@ interface ProfileFormProps {
   soundcloudLink?: string;
   instagramLink?: string;
   tiktokLink?: string;
+  availability?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
 }
 
 export function ProfileForm({
@@ -76,6 +91,7 @@ export function ProfileForm({
   soundcloudLink = "",
   instagramLink = "",
   tiktokLink = "",
+  availability = [],
 }: ProfileFormProps = {}) {
   const { data: session } = useSession();
   const router = useRouter();
@@ -89,6 +105,7 @@ export function ProfileForm({
       soundcloudLink: soundcloudLink || "",
       instagramLink: instagramLink || "",
       tiktokLink: tiktokLink || "",
+      availability: availability || [],
     },
   });
 
@@ -155,6 +172,33 @@ export function ProfileForm({
                   <ToggleGroupItem value="bass">Bass</ToggleGroupItem>
                   <ToggleGroupItem value="vocals">Vocals</ToggleGroupItem>
                   <ToggleGroupItem value="other">Other</ToggleGroupItem>
+                </ToggleGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="availability"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Availability</FormLabel>
+              <FormControl>
+                <ToggleGroup
+                  className="w-full"
+                  type="multiple"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <ToggleGroupItem value="monday">Monday</ToggleGroupItem>
+                  <ToggleGroupItem value="tuesday">Tuesday</ToggleGroupItem>
+                  <ToggleGroupItem value="wednesday">Wednesday</ToggleGroupItem>
+                  <ToggleGroupItem value="thursday">Thursday</ToggleGroupItem>
+                  <ToggleGroupItem value="friday">Friday</ToggleGroupItem>
+                  <ToggleGroupItem value="saturday">Saturday</ToggleGroupItem>
+                  <ToggleGroupItem value="sunday">Sunday</ToggleGroupItem>
                 </ToggleGroup>
               </FormControl>
               <FormMessage />

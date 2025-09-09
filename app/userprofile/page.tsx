@@ -326,6 +326,24 @@ export default function ProfilePage() {
                 </div>
               )}
 
+              {/* Availability */}
+              {user.availability && user.availability.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Availability</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {user.availability.map((day, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-sm"
+                      >
+                        {day.charAt(0).toUpperCase() + day.slice(1)}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Social Links */}
               {socialLinks.length > 0 && (
                 <div>
@@ -443,6 +461,7 @@ export default function ProfilePage() {
                 soundcloudLink={user.soundcloud_link}
                 instagramLink={user.instagram_link}
                 tiktokLink={user.tiktok_link}
+                availability={user.availability}
               />
             </CardContent>
           </Card>
