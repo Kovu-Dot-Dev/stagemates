@@ -28,13 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Band } from "@/types";
 
-interface Band {
-  id: number;
-  name: string;
-  genre: string;
-  members: User[];
-}
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -53,11 +48,7 @@ export default function Home() {
   const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
-    console.log("session", session);
-    console.log("loading", loading);
-
     const handleUser = async () => {
-      console.log(session);
       if (session?.user?.email && session?.user?.name) {
         // Check if user exists
         const checkResponse = await fetch(
@@ -67,6 +58,7 @@ export default function Home() {
         if (checkResult.data) {
           setCurrentUserId(checkResult.data.id);
           setUserData(checkResult.data);
+          localStorage.setItem('userData', JSON.stringify(checkResult.data));
         } else {
           // User doesn't exist, create them
           const createResponse = await fetch("/api/adduser", {
@@ -95,6 +87,7 @@ export default function Home() {
             if (newUserResult.data) {
               setCurrentUserId(newUserResult.data.id);
               setUserData(newUserResult.data);
+              localStorage.setItem('userData', JSON.stringify(newUserResult.data));
             }
           } else {
             console.error("Failed to create user");

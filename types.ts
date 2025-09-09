@@ -53,3 +53,10 @@ export interface UserProfile {
     created_at: string;
     date_happening: string;
   }
+
+  export interface Band {
+    id: number;
+    name: string;
+    genre: string;
+    members: User[];
+  }
