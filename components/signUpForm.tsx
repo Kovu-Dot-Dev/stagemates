@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { Button } from "@/components/ui/button";
@@ -21,8 +23,8 @@ import { Input } from "@/components/ui/input";
 
 const onSubmit = async (
   values: z.infer<typeof formSchema>,
-  session: any,
-  router: any
+  session: Session | null,
+  router: AppRouterInstance
 ) => {
   const response = await fetch("/api/adduser", {
     method: "POST",
