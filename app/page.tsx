@@ -12,6 +12,22 @@ import JamCard from "@/components/jamCard";
 import { Jam, User } from "@/types";
 import { JamModal } from "@/components/jamCard";
 import CTACard from "@/components/ctaCard";
+import { sendInvites } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Band {
   id: number;
@@ -30,6 +46,11 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [currentJam, setCurrentJam] = useState<Jam | null>(null);
   const [bands, setBands] = useState<Band[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedJam, setSelectedJam] = useState<string>("");
+  const [selectedBand, setSelectedBand] = useState<Band | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
     console.log("session", session);
@@ -43,8 +64,10 @@ export default function Home() {
           `/api/userbyemail?email=${encodeURIComponent(session.user.email)}`
         );
         const checkResult = await checkResponse.json();
-
-        if (!checkResult.data) {
+        if (checkResult.data) {
+          setCurrentUserId(checkResult.data.id);
+          setUserData(checkResult.data);
+        } else {
           // User doesn't exist, create them
           const createResponse = await fetch("/api/adduser", {
             method: "POST",
@@ -64,6 +87,15 @@ export default function Home() {
 
           if (createResponse.ok) {
             console.log("User created successfully");
+            // Fetch the newly created user to get their ID
+            const newUserResponse = await fetch(
+              `/api/userbyemail?email=${encodeURIComponent(session.user.email)}`
+            );
+            const newUserResult = await newUserResponse.json();
+            if (newUserResult.data) {
+              setCurrentUserId(newUserResult.data.id);
+              setUserData(newUserResult.data);
+            }
           } else {
             console.error("Failed to create user");
           }
@@ -107,22 +139,27 @@ export default function Home() {
           const bandsWithMembers = await Promise.all(
             result.data.map(async (band: Band) => {
               try {
-                const memberResponse = await fetch(`/api/user?bandId=${band.id}`);
+                const memberResponse = await fetch(
+                  `/api/user?bandId=${band.id}`
+                );
                 const memberResult = await memberResponse.json();
                 return {
                   ...band,
-                  members: memberResult.data || []
+                  members: memberResult.data || [],
                 };
               } catch (error) {
-                console.error(`Error fetching members for band ${band.id}:`, error);
+                console.error(
+                  `Error fetching members for band ${band.id}:`,
+                  error
+                );
                 return {
                   ...band,
-                  members: []
+                  members: [],
                 };
               }
             })
           );
-          
+
           console.log("bands with members", bandsWithMembers);
           setBands(bandsWithMembers);
         }
@@ -152,6 +189,28 @@ export default function Home() {
         instrument.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
+
+  // Filter jams by owner email matching session user email
+  const userOwnedJams = jams.filter(
+    (jam) => jam.owner_email === session?.user?.email
+  );
+
+  // Function to send invites to band members
+  const handleSendInvites = async (jamId: string, bandId: number) => {
+    if (!currentUserId) {
+      console.error("No current user ID available");
+      alert("Please log in to send invites.");
+      return;
+    }
+
+    const result = await sendInvites(jamId, bandId.toString(), currentUserId.toString());
+
+    if (result.success) {
+      alert(result.message || "Invites sent successfully!");
+    } else {
+      alert(`Error sending invites: ${result.error}`);
+    }
+  };
 
   if (loading || status === "loading") {
     return (
@@ -281,22 +340,100 @@ export default function Home() {
                 bands.map((band: Band) => (
                   <div
                     key={band.id}
-                    className="p-4 border border-gray-200 rounded-lg shadow-sm"
+                    className="p-4 border border-gray-200 rounded-lg shadow-sm flex justify-between items-start"
                   >
-                    <h2 className="text-xl font-semibold mb-2">{band.name}</h2>
-                    <p className="mb-3">
-                      <span className="font-semibold">Genre:</span> {band.genre}
-                    </p>
-                    <div>
-                      <span className="font-semibold mb-2 block">Members:</span>
-                      <div className="flex flex-wrap gap-2">
-                        {band.members.map(member => (
-                          <Badge key={member.id} variant="secondary">
-                            {member.name}
-                          </Badge>
-                        ))}
+                    <div className="flex flex-col">
+                      <h2 className="text-xl font-semibold mb-2">
+                        {band.name}
+                      </h2>
+                      <p className="mb-3">
+                        <span className="font-semibold">Genre:</span>{" "}
+                        {band.genre}
+                      </p>
+                      <div>
+                        <span className="font-semibold mb-2 block">
+                          Members:
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {band.members.map((member) => (
+                            <Badge key={member.id} variant="secondary">
+                              {member.name}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      className="cursor-pointer"
+                      size="sm"
+                      onClick={() => {
+                        console.log('xxxxx', band.id)
+                        console.log('xxxx', band.name)
+                        setSelectedBand(band);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      Invite band to Jam
+                    </Button>
+                    <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                      setIsDialogOpen(open);
+                      if (!open) {
+                        setSelectedBand(null);
+                        setSelectedJam("");
+                      }
+                    }}>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Invite {selectedBand?.name} to your jam</DialogTitle>
+                          <DialogDescription>
+                            Select a jam to invite this band to
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-sm font-medium mb-2 block">
+                              Select your jam:
+                            </label>
+                            <Select
+                              value={selectedJam}
+                              onValueChange={(value) => {
+                                setSelectedJam(value);
+                              }}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a jam to invite the band to" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {userOwnedJams.map((jam) => (
+                                  <SelectItem
+                                    key={jam.id}
+                                    value={jam.id.toString()}
+                                  >
+                                    {jam.jam_name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <Button
+                            onClick={() => {
+                              if (selectedJam && selectedBand) {
+                                console.log('Inviting band:', selectedBand.name, 'id:', selectedBand.id, 'to jam:', selectedJam);
+                                handleSendInvites(selectedJam, selectedBand.id);
+                                setIsDialogOpen(false);
+                              } else if (!selectedJam) {
+                                alert("Please select a jam first");
+                              } else {
+                                alert("No band selected");
+                              }
+                            }}
+                          >
+                            Invite Band
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 ))
               ) : (
