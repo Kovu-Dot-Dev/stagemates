@@ -4,8 +4,30 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const userEmail = searchParams.get('userEmail');
     
-    if (id) {
+    if (userEmail) {
+      console.log(`Fetching jams for user email: ${userEmail}`);
+      
+      // Search jams by owner_email
+      const { data, error } = await supabaseServer
+        .from("jams")
+        .select("*")
+        .eq("owner_email", userEmail)
+        .order("created_at", { ascending: false });
+        
+      if (error) {
+        console.log("Error fetching jams by email:", error);
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+        });
+      }
+      
+      console.log("Jams fetched successfully by email:", data);
+      return new Response(JSON.stringify({ data }), { 
+        status: 200 
+      });
+    } else if (id) {
       console.log(`Fetching jams for user ID: ${id}`);
       
       // First, get accepted invites where user is either requester or respondant
