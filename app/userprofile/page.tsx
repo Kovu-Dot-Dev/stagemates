@@ -10,7 +10,15 @@ import EmbedContent from "@/components/embedContent";
 import { ProfileForm } from "@/components/signUpForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-import { UserProfile, Jam } from "@/types";
+import { UserProfile, Jam, User } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { CreateBandForm } from "@/components/createBandForm";
 
 interface JamWithParticipants extends Jam {
   participants: UserProfile[];
@@ -20,11 +28,13 @@ export default function ProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
   const [pastJams, setPastJams] = useState<JamWithParticipants[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageState, setPageState] = useState<"view" | "edit">("view");
   const [invites, setInvites] = useState<any[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -32,6 +42,16 @@ export default function ProfilePage() {
       router.push("/login");
       return;
     }
+
+    const fetchAllUsers = async () => {
+      const response = await fetch("/api/users");
+      const result = await response.json();
+      if (result.data) {
+        setUsers(result.data);
+        console.log("users fetched");
+        console.log(users);
+      }
+    };
 
     const fetchData = async (email: string) => {
       console.log("Fetching user with email:", email);
@@ -88,18 +108,24 @@ export default function ProfilePage() {
             (jam: Jam) => jam.date_happening < today
           );
           console.log("Filtered past jams:", filteredPastJams);
-          
+
           // Fetch participants for each jam
           const jamsWithParticipants = await Promise.all(
             filteredPastJams.map(async (jam: Jam) => {
-              const participants = await fetchJamParticipants(jam.id);
+              if (jam.id) {
+                const participants = await fetchJamParticipants(jam.id);
+                return {
+                  ...jam,
+                  participants,
+                };
+              }
               return {
                 ...jam,
-                participants
+                participants: [],
               };
             })
           );
-          
+
           setPastJams(jamsWithParticipants);
         } else {
           console.error("Error fetching jams:", result.error);
@@ -109,7 +135,9 @@ export default function ProfilePage() {
       }
     };
 
-    const fetchJamParticipants = async (jamId: number): Promise<UserProfile[]> => {
+    const fetchJamParticipants = async (
+      jamId: number
+    ): Promise<UserProfile[]> => {
       console.log("Fetching participants for jam ID:", jamId);
       try {
         const response = await fetch(`/api/user?jamId=${jamId}`, {
@@ -134,6 +162,7 @@ export default function ProfilePage() {
     if (session && session.user && session.user.email) {
       fetchData(session.user.email);
     }
+    fetchAllUsers();
   }, [session, status, router]);
 
   const handleAcceptInvite = async (inviteId: string) => {
@@ -195,15 +224,40 @@ export default function ProfilePage() {
           <Button variant="outline" onClick={() => router.push("/")} size="sm">
             ← Back to Home
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setPageState(pageState === "view" ? "edit" : "view");
-            }}
-            size="sm"
-          >
-            {pageState === "view" ? "Edit Profile" : "View Profile"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={() => {
+                setPageState(pageState === "view" ? "edit" : "view");
+              }}
+              size="sm"
+            >
+              {pageState === "view" ? "Edit Profile" : "View Profile"}
+            </Button>
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={() => {
+                setIsDialogOpen(true);
+              }}
+              size="sm"
+            >
+              Create Band
+            </Button>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Test</DialogTitle>
+                <DialogDescription>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Quisquam, quos.
+                </DialogDescription>
+              </DialogHeader>
+              <CreateBandForm />
+            </DialogContent>
+          </Dialog>
         </div>
         {pageState === "view" ? (
           <Card>
@@ -296,47 +350,70 @@ export default function ProfilePage() {
                 {pastJams.length > 0 ? (
                   <div className="space-y-4">
                     {pastJams.map((jam) => (
-                      <div key={jam.id} className="border rounded-lg p-4 bg-card">
+                      <div
+                        key={jam.id}
+                        className="border rounded-lg p-4 bg-card"
+                      >
                         <div className="flex justify-between items-start mb-3">
-                          <h4 className="font-semibold text-lg">{jam.jam_name}</h4>
+                          <h4 className="font-semibold text-lg">
+                            {jam.jam_name}
+                          </h4>
                           <Badge variant="outline" className="text-xs">
                             ID: {jam.id}
                           </Badge>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">📍 Location:</span>
+                              <span className="text-sm font-medium">
+                                📍 Location:
+                              </span>
                               <span className="text-sm">{jam.location}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">👥 Capacity:</span>
-                              <span className="text-sm">{jam.capacity} people</span>
+                              <span className="text-sm font-medium">
+                                👥 Capacity:
+                              </span>
+                              <span className="text-sm">
+                                {jam.capacity} people
+                              </span>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">📅 Jam Date:</span>
+                              <span className="text-sm font-medium">
+                                📅 Jam Date:
+                              </span>
                               <span className="text-sm">
-                                {new Date(jam.date_happening).toLocaleDateString()}
+                                {new Date(
+                                  jam.date_happening
+                                ).toLocaleDateString()}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">👤 Owner:</span>
+                              <span className="text-sm font-medium">
+                                👤 Owner:
+                              </span>
                               <span className="text-sm">{jam.owner_email}</span>
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Participants */}
                         {jam.participants && jam.participants.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-border">
-                            <h5 className="text-sm font-medium mb-2">🎵 Participants:</h5>
+                            <h5 className="text-sm font-medium mb-2">
+                              🎵 Participants:
+                            </h5>
                             <div className="flex flex-wrap gap-2">
                               {jam.participants.map((participant) => (
-                                <Badge key={participant.id} variant="secondary" className="text-xs">
+                                <Badge
+                                  key={participant.id}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
                                   {participant.name} (@{participant.username})
                                 </Badge>
                               ))}
