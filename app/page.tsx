@@ -254,7 +254,7 @@ export default function Home() {
       {/* Tabs */}
       <div className="w-full max-w-4xl mx-auto flex-1">
         <Tabs defaultValue="jams" className="w-full flex justify-center">
-          <TabsList className="grid w-1/3 mx-auto grid-cols-3">
+          <TabsList className="grid w-1/3 min-w-64 mb-4 mx-auto grid-cols-3">
             <TabsTrigger value="jams" className="cursor-pointer">
               Jams
             </TabsTrigger>

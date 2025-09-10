@@ -224,7 +224,7 @@ export default function ProfilePage() {
           <Button variant="outline" onClick={() => router.push("/")} size="sm">
             ← Back to Home
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               className="cursor-pointer"
