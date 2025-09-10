@@ -95,6 +95,25 @@ export default function JamCard({
   };
   const [attendees, setAttendees] = useState<User[]>([]);
 
+  // Helper function to get date status
+  const getDateStatus = (dateString: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const jamDate = new Date(dateString);
+    jamDate.setHours(0, 0, 0, 0);
+
+    if (jamDate.getTime() === today.getTime()) {
+      return { status: "Live", variant: "destructive" as const };
+    } else if (jamDate > today) {
+      return { status: "Upcoming", variant: "secondary" as const };
+    } else {
+      return { status: "Past", variant: "outline" as const };
+    }
+  };
+
+  const dateStatus = getDateStatus(jam.date_happening);
+
   useEffect(() => {
     const getAttendees = async () => {
       const response = await fetch(`/api/getAttendees?jamId=${jam.id}`);
@@ -124,6 +143,14 @@ export default function JamCard({
           <CardTitle>{jam.jam_name}</CardTitle>
           <CardDescription>
             <Badge variant="outline">{jam.location}</Badge>
+          </CardDescription>
+          <CardDescription>
+            <Badge variant={dateStatus.variant}>{dateStatus.status}</Badge>
+          </CardDescription>
+          <CardDescription>
+            {jam.date_happening
+              ? new Date(jam.date_happening).toLocaleDateString()
+              : new Date().toLocaleDateString()}
           </CardDescription>
           <CardDescription>
             {attendees.map((attendee) => (
