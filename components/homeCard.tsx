@@ -14,10 +14,14 @@ export default function HomeCard({
   userId,
   title,
   instruments,
+  availability = [],
+  genres = [],
 }: {
   userId: number;
   title: string;
   instruments: string[];
+  availability?: string[];
+  genres?: string[];
 }) {
   const router = useRouter();
 
@@ -32,10 +36,20 @@ export default function HomeCard({
     >
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription className="flex gap-2">
+        <CardDescription className="flex gap-2 flex-wrap">
           {instruments && instruments.map((instrument, index) => (
-            <Badge key={index} variant="default">
+            <Badge key={"inst-" + index} variant="default">
               {instrument}
+            </Badge>
+          ))}
+          {availability && availability.map((day, index) => (
+            <Badge key={"avail-" + index} variant="secondary">
+              {day.charAt(0).toUpperCase() + day.slice(1)}
+            </Badge>
+          ))}
+          {genres && genres.map((genre, index) => (
+            <Badge key={"genre-" + index} variant="outline">
+              {genre}
             </Badge>
           ))}
         </CardDescription>

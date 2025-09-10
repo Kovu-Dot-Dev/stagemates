@@ -16,6 +16,9 @@ export interface User {
   name: string;
   email: string;
   instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
+  availability?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
+  genres?: number[];
+
 }
 
 export interface UserProfile {

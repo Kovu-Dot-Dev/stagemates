@@ -30,6 +30,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [currentJam, setCurrentJam] = useState<Jam | null>(null);
   const [bands, setBands] = useState<Band[]>([]);
+  const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
     console.log("session", session);
@@ -89,6 +90,14 @@ export default function Home() {
       }
     };
 
+    const fetchGenres = async () => {
+      const response = await fetch("/api/genres");
+      const result = await response.json();
+      if (result.data) {
+        setGenres(result.data);
+      }
+    };
+
     const fetchJams = async () => {
       const response = await fetch("/api/jams");
       const result = await response.json();
@@ -141,6 +150,7 @@ export default function Home() {
       fetchJams();
       fetchUsers();
       fetchBands();
+      fetchGenres();
     }
   }, [session, status, router, loading]);
 
@@ -152,6 +162,13 @@ export default function Home() {
         instrument.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
+
+  // Helper to get genre names from ids (if available)
+  // You may want to fetch all genres and map ids to names for a real app
+  const getGenreName = (id: number) => {
+    const genre = genres.find((genre) => genre.id === id);
+    return genre ? genre.name : "Unknown";
+  };
 
   if (loading || status === "loading") {
     return (
@@ -240,6 +257,8 @@ export default function Home() {
                     userId={user.id}
                     title={user.name}
                     instruments={user.instruments ?? []}
+                    availability={user.availability ?? []}
+                    genres={user.genres?.map(genreId => getGenreName(genreId))}
                   />
                 ))
               ) : searchTerm ? (
