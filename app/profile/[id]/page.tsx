@@ -428,11 +428,11 @@ export default function ProfilePage() {
             )}
 
             {/* Genre */}
-            {user.genres && user.genres.length > 0 && (
+            {profile.genres && profile.genres.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold mb-3">Preferred Genres</h3>
                 <div className="flex flex-wrap gap-2">
-                  {user.genres.map((genreId, index) => (
+                  {profile.genres.map((genreId, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
@@ -461,7 +461,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-lg font-semibold mb-3">Availability</h3>
               <div className="flex flex-wrap gap-2">
-                {user.availability?.map((day, index) => (
+                { profile.availability?.map((day, index) => (
                   <Badge key={index} variant="secondary" className="text-sm">
                     {day.charAt(0).toUpperCase() + day.slice(1)}
                   </Badge>

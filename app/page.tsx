@@ -126,7 +126,7 @@ export default function Home() {
       const response = await fetch("/api/jams");
       const result = await response.json();
       if (result.data) {
-        console.log(result.data);
+        console.log('xx jams', result.data);
         setJams(result.data);
       }
     };
