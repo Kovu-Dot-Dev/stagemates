@@ -29,6 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Band } from "@/types";
+import AskJamie from "@/components/askJamie";
+import Script from "next/script";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -58,7 +60,7 @@ export default function Home() {
         if (checkResult.data) {
           setCurrentUserId(checkResult.data.id);
           setUserData(checkResult.data);
-          localStorage.setItem('userData', JSON.stringify(checkResult.data));
+          localStorage.setItem("userData", JSON.stringify(checkResult.data));
         } else {
           // User doesn't exist, create them
           const createResponse = await fetch("/api/adduser", {
@@ -87,7 +89,10 @@ export default function Home() {
             if (newUserResult.data) {
               setCurrentUserId(newUserResult.data.id);
               setUserData(newUserResult.data);
-              localStorage.setItem('userData', JSON.stringify(newUserResult.data));
+              localStorage.setItem(
+                "userData",
+                JSON.stringify(newUserResult.data)
+              );
             }
           } else {
             console.error("Failed to create user");
@@ -219,7 +224,11 @@ export default function Home() {
       return;
     }
 
-    const result = await sendInvites(jamId, bandId.toString(), currentUserId.toString());
+    const result = await sendInvites(
+      jamId,
+      bandId.toString(),
+      currentUserId.toString()
+    );
 
     if (result.success) {
       alert(result.message || "Invites sent successfully!");
@@ -238,6 +247,8 @@ export default function Home() {
 
   return (
     <div className="font-sans flex flex-col min-h-screen p-8 gap-8">
+      {/* <AskJamie /> */}
+      <Script src="https://deformity.ai/api/widget?variant=popover&id=w28pfTDPXxIA&buttonColor=%23000000&iconColor=%23ffffff&icon=chat" />
       {/* Header */}
       <div className="w-full max-w-4xl mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold text-foreground">Stagemates</h1>
@@ -386,24 +397,29 @@ export default function Home() {
                       className="cursor-pointer"
                       size="sm"
                       onClick={() => {
-                        console.log('xxxxx', band.id)
-                        console.log('xxxx', band.name)
+                        console.log("xxxxx", band.id);
+                        console.log("xxxx", band.name);
                         setSelectedBand(band);
                         setIsDialogOpen(true);
                       }}
                     >
                       Invite band to Jam
                     </Button>
-                    <Dialog open={isDialogOpen} onOpenChange={(open) => {
-                      setIsDialogOpen(open);
-                      if (!open) {
-                        setSelectedBand(null);
-                        setSelectedJam("");
-                      }
-                    }}>
+                    <Dialog
+                      open={isDialogOpen}
+                      onOpenChange={(open) => {
+                        setIsDialogOpen(open);
+                        if (!open) {
+                          setSelectedBand(null);
+                          setSelectedJam("");
+                        }
+                      }}
+                    >
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Invite {selectedBand?.name} to your jam</DialogTitle>
+                          <DialogTitle>
+                            Invite {selectedBand?.name} to your jam
+                          </DialogTitle>
                           <DialogDescription>
                             Select a jam to invite this band to
                           </DialogDescription>
@@ -437,7 +453,14 @@ export default function Home() {
                           <Button
                             onClick={() => {
                               if (selectedJam && selectedBand) {
-                                console.log('Inviting band:', selectedBand.name, 'id:', selectedBand.id, 'to jam:', selectedJam);
+                                console.log(
+                                  "Inviting band:",
+                                  selectedBand.name,
+                                  "id:",
+                                  selectedBand.id,
+                                  "to jam:",
+                                  selectedJam
+                                );
                                 handleSendInvites(selectedJam, selectedBand.id);
                                 setIsDialogOpen(false);
                               } else if (!selectedJam) {
