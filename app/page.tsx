@@ -47,6 +47,7 @@ export default function Home() {
   const [selectedBand, setSelectedBand] = useState<Band | null>(null);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [userData, setUserData] = useState<User | null>(null);
+  const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
     const handleUser = async () => {
@@ -118,11 +119,19 @@ export default function Home() {
       }
     };
 
+    const fetchGenres = async () => {
+      const response = await fetch("/api/genres");
+      const result = await response.json();
+      if (result.data) {
+        setGenres(result.data);
+      }
+    };
+
     const fetchJams = async () => {
       const response = await fetch("/api/jams");
       const result = await response.json();
       if (result.data) {
-        console.log(result.data);
+        console.log('xx jams', result.data);
         setJams(result.data);
       }
     };
@@ -175,6 +184,7 @@ export default function Home() {
       fetchJams();
       fetchUsers();
       fetchBands();
+      fetchGenres();
     }
   }, [session, status, router, loading]);
 
@@ -184,8 +194,22 @@ export default function Home() {
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.instruments?.some((instrument) =>
         instrument.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      user.genres?.some((genreId) => {
+        const genre = genres.find((g) => g.id === genreId);
+        return genre?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      }) ||
+      user.availability?.some((day) =>
+        day.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
+
+  // Helper to get genre names from ids (if available)
+  // You may want to fetch all genres and map ids to names for a real app
+  const getGenreName = (id: number) => {
+    const genre = genres.find((genre) => genre.id === id);
+    return genre ? genre.name : "Unknown";
+  };
 
   // Filter jams by owner email matching session user email
   const userOwnedJams = jams.filter(
@@ -265,7 +289,7 @@ export default function Home() {
       {/* Tabs */}
       <div className="w-full max-w-4xl mx-auto flex-1">
         <Tabs defaultValue="jams" className="w-full flex justify-center">
-          <TabsList className="grid w-1/3 mx-auto grid-cols-3">
+          <TabsList className="grid w-1/3 min-w-64 mb-4 mx-auto grid-cols-3">
             <TabsTrigger value="jams" className="cursor-pointer">
               Jams
             </TabsTrigger>
@@ -286,7 +310,7 @@ export default function Home() {
             <div className="w-full max-w-md mx-auto">
               <Input
                 type="text"
-                placeholder="Search musicians by name or instrument..."
+                placeholder="Search musicians by name, instrument, genre, or available days..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
@@ -302,6 +326,8 @@ export default function Home() {
                     userId={user.id}
                     title={user.name}
                     instruments={user.instruments ?? []}
+                    availability={user.availability ?? []}
+                    genres={user.genres?.map(genreId => getGenreName(genreId))}
                   />
                 ))
               ) : searchTerm ? (
