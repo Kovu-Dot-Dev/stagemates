@@ -160,6 +160,13 @@ export default function Home() {
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.instruments?.some((instrument) =>
         instrument.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      user.genres?.some((genreId) => {
+        const genre = genres.find((g) => g.id === genreId);
+        return genre?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      }) ||
+      user.availability?.some((day) =>
+        day.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
 
@@ -241,7 +248,7 @@ export default function Home() {
             <div className="w-full max-w-md mx-auto">
               <Input
                 type="text"
-                placeholder="Search musicians by name or instrument..."
+                placeholder="Search musicians by name, instrument, genre, or available days..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
