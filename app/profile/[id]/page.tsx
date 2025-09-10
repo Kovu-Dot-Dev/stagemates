@@ -293,126 +293,139 @@ export default function ProfilePage() {
               <CardTitle className="flex justify-between items-center">
                 <div className="text-3xl flex">{profile.name}</div>
                 {/* SEND JAM REQ BUTTON */}
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Button
-                        className="cursor-pointer"
-                        variant="outline"
-                        size="sm"
-                      >
-                        Send Jam Request
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => handleDialogOpen("create")}
-                      >
-                        Create Jam
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => handleDialogOpen("invite")}
-                      >
-                        Invite to Existing Jam
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <div className="flex flex-col items-end sm:flex-row gap-2">
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button
+                          className="cursor-pointer"
+                          variant="outline"
+                          size="sm"
+                        >
+                          Send Jam Request
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => handleDialogOpen("create")}
+                        >
+                          Create Jam
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => handleDialogOpen("invite")}
+                        >
+                          Invite to Existing Jam
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{getDialogContent().title}</DialogTitle>
-                        <DialogDescription>
-                          {getDialogContent().description}
-                        </DialogDescription>
-                      </DialogHeader>
-                      {getDialogContent().content}
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                {/* ADD TO BAND BUTTON */}
-                <div>
-                  <Button
-                    className="cursor-pointer"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setIsBandDialogOpen(true);
-                    }}
-                  >
-                    Add to Band
-                  </Button>
-                  <Dialog open={isBandDialogOpen} onOpenChange={setIsBandDialogOpen}>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add to Band</DialogTitle>
-                        <DialogDescription>
-                          Add {profile?.name} to your band
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">
-                            Select your band:
-                          </label>
-                          <Select
-                            value={selectedBand}
-                            onValueChange={(value) => {
-                              setSelectedBand(value);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a band to add the user to" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {userBands.map((band) => (
-                                <SelectItem
-                                  key={band.id}
-                                  value={band.id.toString()}
-                                >
-                                  {band.name} - {band.genre}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setSelectedBand("");
-                              setIsBandDialogOpen(false);
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            onClick={async () => {
-                              if (selectedBand && profile?.id) {
-                                const result = await addUserToBand(selectedBand, profile.id.toString());
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>{getDialogContent().title}</DialogTitle>
+                          <DialogDescription>
+                            {getDialogContent().description}
+                          </DialogDescription>
+                        </DialogHeader>
+                        {getDialogContent().content}
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  {/* ADD TO BAND BUTTON */}
+                  <div>
+                    <Button
+                      className="cursor-pointer"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setIsBandDialogOpen(true);
+                      }}
+                    >
+                      Add to Band
+                    </Button>
+                    <Dialog
+                      open={isBandDialogOpen}
+                      onOpenChange={setIsBandDialogOpen}
+                    >
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add to Band</DialogTitle>
+                          <DialogDescription>
+                            Add {profile?.name} to your band
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-sm font-medium mb-2 block">
+                              Select your band:
+                            </label>
+                            <Select
+                              value={selectedBand}
+                              onValueChange={(value) => {
+                                setSelectedBand(value);
+                              }}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a band to add the user to" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {userBands.map((band) => (
+                                  <SelectItem
+                                    key={band.id}
+                                    value={band.id.toString()}
+                                  >
+                                    {band.name} - {band.genre}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedBand("");
+                                setIsBandDialogOpen(false);
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={async () => {
+                                if (selectedBand && profile?.id) {
+                                  const result = await addUserToBand(
+                                    selectedBand,
+                                    profile.id.toString()
+                                  );
 
-                                if (result.success) {
-                                  alert(result.message || "User added to band successfully!");
-                                  setSelectedBand("");
-                                  setIsBandDialogOpen(false);
+                                  if (result.success) {
+                                    alert(
+                                      result.message ||
+                                        "User added to band successfully!"
+                                    );
+                                    setSelectedBand("");
+                                    setIsBandDialogOpen(false);
+                                  } else {
+                                    alert(
+                                      `Error adding user to band: ${result.error}`
+                                    );
+                                  }
+                                } else if (!selectedBand) {
+                                  alert("Please select a band first");
                                 } else {
-                                  alert(`Error adding user to band: ${result.error}`);
+                                  alert("Profile user ID not available");
                                 }
-                              } else if (!selectedBand) {
-                                alert("Please select a band first");
-                              } else {
-                                alert("Profile user ID not available");
-                              }
-                            }}
-                          >
-                            Add to Band
-                          </Button>
+                              }}
+                            >
+                              Add to Band
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
               </CardTitle>
               <p className="text-xl ">@{profile.username}</p>
