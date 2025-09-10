@@ -30,6 +30,7 @@ export interface UserProfile {
     instagram_link?: string;
     tiktok_link?: string;
     availability?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
+    genres?: number[];
   }
   
   export interface Jam {
@@ -41,3 +42,8 @@ export interface UserProfile {
     created_at: string;
     date_happening: string;
   }
+
+export interface Genre {
+  id: number;
+  name: string;
+}

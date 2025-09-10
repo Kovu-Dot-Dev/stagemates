@@ -42,6 +42,7 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [dialogType, setDialogType] = useState<DialogType>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
 
   const handleDialogOpen = (type: DialogType) => {
     if (!session) {
@@ -123,6 +124,16 @@ export default function ProfilePage() {
       }
     };
 
+    const fetchGenres = async () => {
+      const response = await fetch("/api/genres");
+      const result = await response.json();
+      if (result.data) {
+        setGenres(result.data);
+        console.log("genres fetched");
+        console.log(genres);
+      }
+    };
+
     const fetchUserJams = async (userId: number) => {
       console.log("Fetching jams for user ID:", userId);
       try {
@@ -185,6 +196,7 @@ export default function ProfilePage() {
 
     if (params) {
       fetchUser();
+      fetchGenres();
     }
   }, [params, session, status, router]);
 
@@ -286,6 +298,24 @@ export default function ProfilePage() {
               <div>
                 <h3 className="text-lg font-semibold mb-2">About</h3>
                 <p className="">{user.description}</p>
+              </div>
+            )}
+
+            {/* Genre */}
+            {user.genres && user.genres.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Preferred Genres</h3>
+                <div className="flex flex-wrap gap-2">
+                  {user.genres.map((genreId, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="text-sm"
+                    >
+                      {genres.find((g) => g.id === genreId)?.name || "Unknown"}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             )}
 

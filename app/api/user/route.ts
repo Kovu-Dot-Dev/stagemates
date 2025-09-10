@@ -126,10 +126,36 @@ export async function GET(req: Request) {
         status: 404,
       });
     }
+
+    // const { genreData, error } = {} // await supabaseServer
+    //   .from("user_genres")
+    //   .select("*")
+    //   .eq("user_id", userId);
+
+    // if (error) {
+    //   console.log("Error fetching user genres:", error);
+    //   return new Response(JSON.stringify({ error: error.message }), {
+    //     status: 500,
+    //   });
+    // }
+
     
+    // Get user genres
+    const { data: genreData, error: genreErr } = await supabaseServer
+      .from("user_genres")
+      .select("*")
+      .eq("user", userId);
+
+    if (genreErr) {
+      console.log("Error fetching user genres:", genreErr);
+      return new Response(JSON.stringify({ error: genreErr.message }), {
+        status: 500,
+      });
+    }
+
     console.log("User found:", data);
-    return new Response(JSON.stringify({ data }), { 
-      status: 200 
+    return new Response(JSON.stringify({ data: { ...data, genres: genreData?.map(data => data.genre) } }), {
+      status: 200,
     });
   } else {
     return new Response(JSON.stringify({ error: "Either jamId, userId, or bandId parameter is required" }), {
