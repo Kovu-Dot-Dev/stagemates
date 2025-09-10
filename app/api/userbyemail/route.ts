@@ -12,27 +12,40 @@ export async function GET(req: Request) {
   
   console.log("Fetching user with email:", email);
   
-  const { data, error } = await supabaseServer
+  const { data: userData, error: userErr } = await supabaseServer
     .from("users")
     .select("*")
     .eq("email", email);
     
-  if (error) {
-    console.log("Database error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+  if (userErr) {
+    console.log("Database error:", userErr);
+    return new Response(JSON.stringify({ error: userErr.message }), {
       status: 500,
     });
   }
   
-  if (!data || data.length === 0) {
+  if (!userData || userData.length === 0) {
     console.log("User not found");
     return new Response(JSON.stringify({ error: "User not found" }), {
       status: 404,
     });
   }
-  
-  console.log("User found:", data[0]);
-  return new Response(JSON.stringify({ data: data[0] }), { 
-    status: 200 
+
+  // Get user genres
+  const { data: genreData, error: genreErr } = await supabaseServer
+    .from("user_genres")
+    .select("*")
+    .eq("user", userData[0].id);
+
+  if (genreErr) {
+    console.log("Error fetching user genres:", genreErr);
+    return new Response(JSON.stringify({ error: genreErr.message }), {
+      status: 500,
+    });
+  }
+
+  console.log("User found:", {...userData[0], genres: genreData?.map(data => data.genre)});
+  return new Response(JSON.stringify({ data: {...userData[0], genres: genreData?.map(data => data.genre)} }), {
+    status: 200
   });
 }

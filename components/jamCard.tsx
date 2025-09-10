@@ -22,7 +22,7 @@ export function JamModal({
   const [attendees, setAttendees] = useState<User[]>([]);
 
   useEffect(() => {
-    console.log("jam", jam);
+    console.log("xxx jam", jam);
     const getAttendees = async () => {
       const response = await fetch(`/api/getAttendees?jamId=${jam.id}`);
       const result = await response.json();

@@ -10,7 +10,7 @@ import EmbedContent from "@/components/embedContent";
 import { ProfileForm } from "@/components/signUpForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-import { UserProfile, Jam, User, Invite } from "@/types";
+import { UserProfile, Jam, User, Invite, Genre } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ export default function ProfilePage() {
   const [pageState, setPageState] = useState<"view" | "edit">("view");
   const [invites, setInvites] = useState<Invite[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [genres, setGenres] = useState<Genre[]>([]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -50,6 +51,16 @@ export default function ProfilePage() {
         setUsers(result.data);
         console.log("users fetched");
         console.log(users);
+      }
+    };
+
+    const fetchGenres = async () => {
+      const response = await fetch("/api/genres");
+      const result = await response.json();
+      if (result.data) {
+        setGenres(result.data);
+        console.log("genres fetched");
+        console.log(genres);
       }
     };
 
@@ -163,6 +174,7 @@ export default function ProfilePage() {
       fetchData(session.user.email);
     }
     fetchAllUsers();
+    fetchGenres();
   }, [session, status, router]);
 
   const handleAcceptInvite = async (inviteId: string) => {
@@ -308,6 +320,25 @@ export default function ProfilePage() {
                 </Alert>
               )}
 
+              {/* Genre */}
+              {user.genres && user.genres.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Preferred Genres</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {user.genres.map((genreId, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-sm"
+                      >
+                        {genres.find((g) => g.id === genreId)?.name || "Unknown"}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+
               {/* Instruments */}
               {user.instruments && user.instruments.length > 0 && (
                 <div>
@@ -320,6 +351,24 @@ export default function ProfilePage() {
                         className="text-sm"
                       >
                         {instrument}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Availability */}
+              {user.availability && user.availability.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Availability</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {user.availability.map((day, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-sm"
+                      >
+                        {day.charAt(0).toUpperCase() + day.slice(1)}
                       </Badge>
                     ))}
                   </div>
@@ -443,6 +492,9 @@ export default function ProfilePage() {
                 soundcloudLink={user.soundcloud_link}
                 instagramLink={user.instagram_link}
                 tiktokLink={user.tiktok_link}
+                availability={user.availability}
+                genres={genres}
+                preferredGenres={user.genres}
               />
             </CardContent>
           </Card>

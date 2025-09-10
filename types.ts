@@ -16,6 +16,9 @@ export interface User {
   name: string;
   email: string;
   instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
+  availability?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
+  genres?: number[];
+
 }
 
 export interface UserProfile {
@@ -29,19 +32,8 @@ export interface UserProfile {
     soundcloud_link?: string;
     instagram_link?: string;
     tiktok_link?: string;
-  }
-
-  export interface UserProfile {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
-    description?: string;
-    instruments?: ("guitar" | "piano" | "drums" | "bass" | "vocals" | "other")[];
-    spotify_link?: string;
-    soundcloud_link?: string;
-    instagram_link?: string;
-    tiktok_link?: string;
+    availability?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
+    genres?: number[];
   }
   
   export interface Jam {
@@ -53,6 +45,11 @@ export interface UserProfile {
     created_at: string;
     date_happening: string;
   }
+
+export interface Genre {
+  id: number;
+  name: string;
+}
 
   export interface Band {
     id: number;

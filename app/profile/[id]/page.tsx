@@ -50,6 +50,7 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [dialogType, setDialogType] = useState<DialogType>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
   const [isBandDialogOpen, setIsBandDialogOpen] = useState(false);
   const [userBands, setUserBands] = useState<Band[]>([]);
   const [selectedBand, setSelectedBand] = useState<string>("");
@@ -132,6 +133,16 @@ export default function ProfilePage() {
         setError("Failed to load user profile");
       } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchGenres = async () => {
+      const response = await fetch("/api/genres");
+      const result = await response.json();
+      if (result.data) {
+        setGenres(result.data);
+        console.log("genres fetched");
+        console.log(genres);
       }
     };
 
@@ -223,6 +234,7 @@ export default function ProfilePage() {
     }
 
     if (params) {
+      fetchGenres();
       fetchProfile();
     }
   }, [params, session, status, router]);
@@ -428,6 +440,24 @@ export default function ProfilePage() {
               </div>
             )}
 
+            {/* Genre */}
+            {profile.genres && profile.genres.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Preferred Genres</h3>
+                <div className="flex flex-wrap gap-2">
+                  {profile.genres.map((genreId, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="text-sm"
+                    >
+                      {genres.find((g) => g.id === genreId)?.name || "Unknown"}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Instruments */}
             <div>
               <h3 className="text-lg font-semibold mb-3">Instruments</h3>
@@ -439,6 +469,18 @@ export default function ProfilePage() {
                 ))}
               </div>
             </div>
+
+            {/* Availability */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Availability</h3>
+              <div className="flex flex-wrap gap-2">
+                { profile.availability?.map((day, index) => (
+                  <Badge key={index} variant="secondary" className="text-sm">
+                    {day.charAt(0).toUpperCase() + day.slice(1)}
+                  </Badge>
+                ))}
+              </div>
+            </div>          
 
             {/* Social Links */}
             {socialLinks.length > 0 && (
