@@ -28,6 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { Session } from "next-auth";
 
 const bandFormSchema = z.object({
   bandName: z.string().min(1, "Band name is required"),
@@ -75,9 +77,10 @@ const getRandomBandName = () => {
 
 const onSubmit = async (
   values: z.infer<typeof bandFormSchema>,
-  session: any,
-  router: any,
-  onSuccess?: () => void
+  session: Session | null,
+  router: AppRouterInstance,
+  onSuccess?: () => void,
+  user?: User
 ) => {
   if (!values.bandName.trim()) {
     alert("Please enter a band name");
@@ -117,6 +120,7 @@ interface CreateBandFormProps {
   users?: User[];
   memberIds?: string[];
   onSuccess?: () => void;
+  user?: User;
 }
 
 export function CreateBandForm({
@@ -125,10 +129,14 @@ export function CreateBandForm({
   users = [],
   memberIds = [],
   onSuccess,
+  user,
 }: CreateBandFormProps = {}) {
   const { data: session } = useSession();
   const router = useRouter();
   const [selectedUser, setSelectedUser] = useState("");
+
+  console.log('xx user', user)
+  console.log('xx users', users)
   
   const form = useForm<z.infer<typeof bandFormSchema>>({
     resolver: zodResolver(bandFormSchema),
@@ -222,12 +230,14 @@ export function CreateBandForm({
                       <SelectValue placeholder="Select a user to add to the band" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users
+                        {users
                         .filter(user => !field.value.includes(user.id.toString()))
-                        .map((user) => (
-                          <SelectItem key={user.id} value={user.id.toString()}>
-                            {user.name}
-                          </SelectItem>
+                        .map((currentUser) => (
+                          currentUser.id === user?.id ? null : (
+                            <SelectItem key={currentUser.id} value={currentUser.id.toString()}>
+                              {currentUser.name}
+                            </SelectItem>
+                          )
                         ))}
                     </SelectContent>
                   </Select>

@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Genre } from "@/types";
 
@@ -23,8 +25,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const onSubmit = async (
   values: z.infer<typeof formSchema>,
-  session: any,
-  router: any
+  session: Session | null,
+  router: AppRouterInstance
 ) => {
   const response = await fetch("/api/adduser", {
     method: "POST",
@@ -160,7 +162,7 @@ export function ProfileForm({
                 />
               </FormControl>
               <FormDescription>
-                Describe your musical style, experience, or what you're looking
+                Describe your musical style, experience, or what you are looking
                 for.
               </FormDescription>
               <FormMessage />

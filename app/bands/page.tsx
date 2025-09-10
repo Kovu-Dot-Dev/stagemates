@@ -1,15 +1,10 @@
 // show all bands
 "use client";
-import { useSession, signOut, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import HomeCard from "@/components/homeCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import JamCard from "@/components/jamCard";
-import { Jam } from "@/components/jamCard";
-import { JamModal } from "@/components/jamCard";
 
 interface Band {
   id: number;

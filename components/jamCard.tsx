@@ -1,9 +1,6 @@
 import {
   Card,
-  CardAction,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -11,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Jam } from "@/types";
 import { useEffect, useState } from "react";
+import { User} from "@/types";
 
 export function JamModal({
   show,
@@ -21,8 +19,8 @@ export function JamModal({
   onClose: () => void;
   jam: Jam;
 }) {
-  if (!show) return null;
-  const [attendees, setAttendees] = useState<any[]>([]);
+
+  const [attendees, setAttendees] = useState<User[]>([]);
 
   useEffect(() => {
     console.log("jam", jam);
@@ -38,6 +36,8 @@ export function JamModal({
     getAttendees();
     console.log(jam);
   }, [jam]);
+
+  if (!show) return null;
   return (
     // use shadcnui components to make a modal
     <div
@@ -58,7 +58,9 @@ export function JamModal({
         <div className="mb-4">
           <span className="font-semibold">Attendees:</span>
           {attendees.map((attendee) => (
-            <Badge variant="default" key={attendee.id}>{attendee.name}</Badge>
+            <Badge variant="default" key={attendee.id}>
+              {attendee.name}
+            </Badge>
           ))}
 
           <div>
@@ -91,7 +93,26 @@ export default function JamCard({
     // router.push(`/jams/${jam.id}`);
     handleClick?.();
   };
-  const [attendees, setAttendees] = useState<any[]>([]);
+  const [attendees, setAttendees] = useState<User[]>([]);
+
+  // Helper function to get date status
+  const getDateStatus = (dateString: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const jamDate = new Date(dateString);
+    jamDate.setHours(0, 0, 0, 0);
+
+    if (jamDate.getTime() === today.getTime()) {
+      return { status: "Live", variant: "destructive" as const };
+    } else if (jamDate > today) {
+      return { status: "Upcoming", variant: "secondary" as const };
+    } else {
+      return { status: "Past", variant: "outline" as const };
+    }
+  };
+
+  const dateStatus = getDateStatus(jam.date_happening);
 
   useEffect(() => {
     const getAttendees = async () => {
@@ -124,8 +145,18 @@ export default function JamCard({
             <Badge variant="outline">{jam.location}</Badge>
           </CardDescription>
           <CardDescription>
+            <Badge variant={dateStatus.variant}>{dateStatus.status}</Badge>
+          </CardDescription>
+          <CardDescription>
+            {jam.date_happening
+              ? new Date(jam.date_happening).toLocaleDateString()
+              : new Date().toLocaleDateString()}
+          </CardDescription>
+          <CardDescription>
             {attendees.map((attendee) => (
-              <Badge variant="outline" key={attendee.id}>{attendee.name}</Badge>
+              <Badge variant="outline" key={attendee.id}>
+                {attendee.name}
+              </Badge>
             ))}
           </CardDescription>
         </CardHeader>

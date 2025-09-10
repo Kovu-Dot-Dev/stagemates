@@ -18,6 +18,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { Session } from "next-auth";
 
 const jamFormSchema = z.object({
   jamName: z.string().min(1, "Jam name is required"),
@@ -68,8 +70,8 @@ const getRandomJamName = () => {
 
 const onSubmit = async (
   values: z.infer<typeof jamFormSchema>,
-  session: any,
-  router: any,
+  session: Session | null,
+  router: AppRouterInstance,
   inviteUserEmail?: string,
   onSuccess?: () => void
 ) => {

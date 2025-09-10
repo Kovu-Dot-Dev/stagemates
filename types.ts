@@ -50,3 +50,22 @@ export interface Genre {
   id: number;
   name: string;
 }
+
+  export interface Band {
+    id: number;
+    name: string;
+    genre: string;
+    members: User[];
+  }
+
+  export interface Invite {
+    id: number;
+    jam_id: number;
+    requester_id: number;
+    respondant_id: number;
+    accepted: boolean;
+    created_at: string;
+    requester?: User;
+  }
+  
+  
