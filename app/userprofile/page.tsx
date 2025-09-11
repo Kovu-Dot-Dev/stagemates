@@ -261,10 +261,9 @@ export default function ProfilePage() {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Test</DialogTitle>
+                <DialogTitle>Create Band</DialogTitle>
                 <DialogDescription>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Quisquam, quos.
+                  Create a new band with your friends
                 </DialogDescription>
               </DialogHeader>
               <CreateBandForm users={users} user={user} onSuccess={() => setIsDialogOpen(false)}/>
@@ -308,7 +307,9 @@ export default function ProfilePage() {
                           <Button
                             variant="default"
                             size="sm"
-                            onClick={() => handleAcceptInvite(invite.id.toString())}
+                            onClick={() =>
+                              handleAcceptInvite(invite.id.toString())
+                            }
                             className="ml-2 text-primary"
                           >
                             Accept
@@ -323,7 +324,9 @@ export default function ProfilePage() {
               {/* Genre */}
               {user.genres && user.genres.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Preferred Genres</h3>
+                  <h3 className="text-lg font-semibold mb-3">
+                    Preferred Genres
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {user.genres.map((genreId, index) => (
                       <Badge
@@ -331,13 +334,13 @@ export default function ProfilePage() {
                         variant="secondary"
                         className="text-sm"
                       >
-                        {genres.find((g) => g.id === genreId)?.name || "Unknown"}
+                        {genres.find((g) => g.id === genreId)?.name ||
+                          "Unknown"}
                       </Badge>
                     ))}
                   </div>
                 </div>
               )}
-
 
               {/* Instruments */}
               {user.instruments && user.instruments.length > 0 && (
@@ -481,7 +484,7 @@ export default function ProfilePage() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Edit Profile</CardTitle>
+              <CardTitle className="text-xl font-bold">Edit Profile</CardTitle>
             </CardHeader>
             <CardContent>
               <ProfileForm
