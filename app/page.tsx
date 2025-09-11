@@ -189,10 +189,12 @@ export default function Home() {
     }
   }, [session, status, router, loading]);
 
-  // Filter users based on search term
+  // Filter users based on search term and exclude current user
   const filteredUsers = users.filter(
     (user) =>
-      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // Exclude current user from the list
+      user.id !== currentUserId &&
+      (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.instruments?.some((instrument) =>
         instrument.toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
@@ -202,7 +204,7 @@ export default function Home() {
       }) ||
       user.availability?.some((day) =>
         day.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      ))
   );
 
   // Helper to get genre names from ids (if available)

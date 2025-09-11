@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EmbedContent from "@/components/embedContent";
 import { CreateJamForm } from "@/components/createJamForm";
+import { InviteToJamForm } from "@/components/inviteToJamForm";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,24 +83,10 @@ export default function ProfilePage() {
           title: "Invite to Existing Jam",
           description: `Invite ${profile?.name} to join one of your existing jam sessions. Select from your upcoming sessions below.`,
           content: (
-            <div className="space-y-4">
-              <p className="text-sm ">
-                Choose an existing jam session to invite {profile?.name} to
-                join.
-              </p>
-
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={() => setIsDialogOpen(false)}>
-                  Send Invite
-                </Button>
-              </div>
-            </div>
+            <InviteToJamForm
+              inviteUserEmail={profile?.email}
+              onSuccess={() => setIsDialogOpen(false)}
+            />
           ),
         };
       default:
@@ -209,6 +196,7 @@ export default function ProfilePage() {
     };
 
     const fetchUserBands = async (userId: number) => {
+      console.log("Fetching user bands for user ID:", userId);
       const response = await fetch(`/api/bands?userId=${userId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -446,11 +434,7 @@ export default function ProfilePage() {
                 <h3 className="text-lg font-semibold mb-3">Preferred Genres</h3>
                 <div className="flex flex-wrap gap-2">
                   {profile.genres.map((genreId, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="text-sm"
-                    >
+                    <Badge key={index} variant="secondary" className="text-sm">
                       {genres.find((g) => g.id === genreId)?.name || "Unknown"}
                     </Badge>
                   ))}
@@ -474,13 +458,13 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-lg font-semibold mb-3">Availability</h3>
               <div className="flex flex-wrap gap-2">
-                { profile.availability?.map((day, index) => (
+                {profile.availability?.map((day, index) => (
                   <Badge key={index} variant="secondary" className="text-sm">
                     {day.charAt(0).toUpperCase() + day.slice(1)}
                   </Badge>
                 ))}
               </div>
-            </div>          
+            </div>
 
             {/* Social Links */}
             {socialLinks.length > 0 && (
