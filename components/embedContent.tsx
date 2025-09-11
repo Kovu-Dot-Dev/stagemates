@@ -32,11 +32,14 @@ const EmbedContent: React.FC<EmbedContentProps> = ({ url }) => {
 
   // Instagram
   if (hostname.includes("instagram.com")) {
+    const match = url.match(/instagram\.com\/p\/([^/?]+)/);
+    const postId = match ? match[1] : null;
+    if (!postId) return null;
     return (
       <div className="relative w-full max-w-md mx-auto" style={{ aspectRatio: '400/480' }}>
         <iframe
           className="absolute inset-0 w-full h-full"
-          src={`https://www.instagram.com/p/DFg9pIASoq_/embed`}
+          src={`https://www.instagram.com/p/${postId}/embed`}
           frameBorder="0"
           scrolling="no"
         ></iframe>
@@ -46,14 +49,25 @@ const EmbedContent: React.FC<EmbedContentProps> = ({ url }) => {
 
   // TikTok
   if (hostname.includes("tiktok.com")) {
+    // Only works with full URLs like https://www.tiktok.com/@username/video/1234567890
+    // For short URLs (vt.tiktok.com), we would need to resolve the redirect first.
+    const match = url.match(/tiktok\.com\/@([^\/]+)\/video\/(\d+)/);
+    const username = match ? match[1] : null;
+    const videoId = match ? match[2] : null;
+    if (!videoId || !username) {
+      return <p>Could not extract video information from the URL.</p>;
+    }
+    
     return (
       <div className="w-full max-w-sm mx-auto">
         <blockquote
           className="tiktok-embed"
-          cite="https://www.tiktok.com/@scout2015/video/6718335390845095173"
-          data-video-id="6718335390845095173"
+          cite={`https://www.tiktok.com/@${username}/video/${videoId}`}
+          data-video-id={videoId}
           style={{ width: "100%", minHeight: "500px" }}
-        ></blockquote>
+        >
+          <section />
+        </blockquote>
         <script async src="https://www.tiktok.com/embed.js"></script>
       </div>
     );

@@ -64,16 +64,57 @@ const daysOfWeek = [
   "sunday",
 ];
 
+const instagramRegex = /^https:\/\/(www\.)?instagram\.com\/p\/[A-Za-z0-9_-]{5,20}\/?(?:\?[^\s]*)?$/;
+const tiktokRegex = /^https:\/\/(www\.)?tiktok\.com\/@[\w.]+\/video\/\d+\/?(?:\?[^\s]*)?$|^https:\/\/vt\.tiktok\.com\/[A-Za-z0-9]+\/?$/;
+const spotifyRegex = /^https:\/\/open\.spotify\.com\/track\/[A-Za-z0-9]{22}\/?(?:\?[^\s]*)?$/;
+const soundcloudRegex = /^(?:https:\/\/soundcloud\.com\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+\/?(?:\?[^\s]*)?|https:\/\/on\.soundcloud\.com\/[A-Za-z0-9]+\/?)$/;
+
 const formSchema = z.object({
   username: z.string().optional(),
   description: z.string().optional(),
   instruments: z
     .array(z.enum(["guitar", "piano", "drums", "bass", "vocals", "other"]))
     .optional(),
-  spotifyLink: z.string().url().optional().or(z.literal("")),
-  soundcloudLink: z.string().url().optional().or(z.literal("")),
-  instagramLink: z.string().url().optional().or(z.literal("")),
-  tiktokLink: z.string().url().optional().or(z.literal("")),
+  spotifyLink: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || spotifyRegex.test(val),
+      {
+        message: "Please enter a valid Spotify track URL (e.g., https://open.spotify.com/track/yourtrackid)",
+      }
+    ),
+  soundcloudLink: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || soundcloudRegex.test(val),
+      {
+        message: "Please enter a valid SoundCloud track URL (e.g., https://soundcloud.com/yourname/yourtrack)",
+      }
+    ),
+  instagramLink: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || instagramRegex.test(val),
+      {
+        message: "Please enter a valid public Instagram post URL (e.g., https://www.instagram.com/p/yourshortcode/)",
+      }
+    ),
+  tiktokLink: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || tiktokRegex.test(val),
+      {
+        message: "Please enter a valid TikTok post URL (e.g., https://www.tiktok.com/@yourusername/video/yourvideoid, https://vt.tiktok.com/yourshortcode/)",
+      }
+    ),
   availability: z
     .array(z.enum(daysOfWeek))
     .optional(),
@@ -350,7 +391,7 @@ export function ProfileForm({
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="tiktokLink"
           render={({ field }) => (
@@ -362,7 +403,7 @@ export function ProfileForm({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <Button type="submit" variant="default" size="lg" className="w-full">
           Submit
