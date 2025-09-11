@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Genre } from "@/types";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const onSubmit = async (
   values: z.infer<typeof formSchema>,
@@ -75,7 +77,7 @@ const formSchema = z.object({
   availability: z
     .array(z.enum(daysOfWeek))
     .optional(),
-  preferredGenres: z.array(z.number().optional()).max(3).optional(),
+  preferredGenres: z.array(z.number().optional()).max(3),
 });
 
 interface ProfileFormProps {
@@ -123,6 +125,7 @@ export function ProfileForm({
     control: form.control,
     name: "preferredGenres",
   });
+  const [selectedGenre, setSelectedGenre] = useState('');
 
 
   return (
@@ -194,67 +197,69 @@ export function ProfileForm({
           )}
         />
 
-        {/* Preferred Genres Dropdowns */}
-        <div className="grid gap-2">
-          <FormLabel>Preferred Genres</FormLabel>
-          <div className="flex flex-col gap-2">
-            {[0, 1, 2].map((idx) => (
-              <FormField
-                key={idx}
-                control={form.control}
-                name={`preferredGenres.${idx}` as const}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={field.value ? String(field.value) : ""}
-                          onValueChange={(val) => field.onChange(val ? Number(val) : undefined)}
-                          disabled={
-                            genres.length === 0 ||
-                            (idx === 1 && !prefGenres?.[0]) ||
-                            (idx === 2 && !prefGenres?.[1])
-                          }
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a genre" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {genres.map((genre) => (
-                              <SelectItem key={genre.id} value={String(genre.id)}>
-                                {genre.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const current = form.getValues("preferredGenres") ?? [];
-                            console.log("Current preferredGenres:", current);
-                            const newArr = [...current];
-                            for (let j = idx; j < newArr.length; j++) {
-                              newArr[j] = undefined;
-                            }
-                            form.setValue("preferredGenres", newArr);
-                            console.log("Updated preferredGenres:", newArr);
-                          }}
-                          aria-label="Clear selection"
-                          disabled={!field.value}
-                        >
-                          ✕
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          </div>
-        </div>
+        <FormField
+          control={form.control}
+          name="preferredGenres"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Preferred Genres</FormLabel>
+              <FormControl>
+                <div className="space-y-3">
+                  <Select
+                    value={selectedGenre}
+                    onValueChange={(value) => {
+                      console.log("Selected genre value:", value);
+                      const curGenres = form.getValues("preferredGenres");
+                      if (!curGenres.includes(Number(value))) {
+                        form.setValue("preferredGenres", [...curGenres, Number(value)]);
+                        setSelectedGenre('');
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a genre" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {genres.map((genre) => (
+                        <SelectItem key={genre.id} value={String(genre.id)}>
+                          {genre.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  {field.value.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {field.value.map((genreId) => {
+                        const genre = genres.find(g => g.id === genreId);
+                        if (!genre) return null;
+                        return (
+                          <Badge
+                            key={genre.id}
+                            variant="secondary"
+                            className="flex items-center gap-1"
+                          >
+                            <span>{genre.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {form.setValue("preferredGenres", field.value.filter(id => id !== genre.id))}}
+                              className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground ml-1"
+                            >
+                              &times;
+                            </Button>
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
