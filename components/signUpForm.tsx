@@ -187,7 +187,6 @@ export function ProfileForm({
                   <ToggleGroupItem value="drums">Drums</ToggleGroupItem>
                   <ToggleGroupItem value="bass">Bass</ToggleGroupItem>
                   <ToggleGroupItem value="vocals">Vocals</ToggleGroupItem>
-                  <ToggleGroupItem value="other">Other</ToggleGroupItem>
                 </ToggleGroup>
               </FormControl>
               <FormMessage />
@@ -270,13 +269,34 @@ export function ProfileForm({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <ToggleGroupItem value="monday">Monday</ToggleGroupItem>
-                  <ToggleGroupItem value="tuesday">Tuesday</ToggleGroupItem>
-                  <ToggleGroupItem value="wednesday">Wednesday</ToggleGroupItem>
-                  <ToggleGroupItem value="thursday">Thursday</ToggleGroupItem>
-                  <ToggleGroupItem value="friday">Friday</ToggleGroupItem>
-                  <ToggleGroupItem value="saturday">Saturday</ToggleGroupItem>
-                  <ToggleGroupItem value="sunday">Sunday</ToggleGroupItem>
+                  <ToggleGroupItem value="monday">
+                    <span className="hidden sm:inline">Monday</span>
+                    <span className="sm:hidden">M</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="tuesday">
+                    <span className="hidden sm:inline">Tuesday</span>
+                    <span className="sm:hidden">T</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="wednesday">
+                    <span className="hidden sm:inline">Wednesday</span>
+                    <span className="sm:hidden">W</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="thursday">
+                    <span className="hidden sm:inline">Thursday</span>
+                    <span className="sm:hidden">T</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="friday">
+                    <span className="hidden sm:inline">Friday</span>
+                    <span className="sm:hidden">F</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="saturday">
+                    <span className="hidden sm:inline">Saturday</span>
+                    <span className="sm:hidden">S</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="sunday">
+                    <span className="hidden sm:inline">Sunday</span>
+                    <span className="sm:hidden">S</span>
+                  </ToggleGroupItem>
                 </ToggleGroup>
               </FormControl>
               <FormMessage />

@@ -18,56 +18,59 @@ const EmbedContent: React.FC<EmbedContentProps> = ({ url }) => {
       : new URL(url).searchParams.get("v");
     if (!videoId) return null;
     return (
-      <iframe
-        width="560"
-        height="315"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="YouTube video"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      ></iframe>
+      <div className="relative w-full aspect-video">
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src={`https://www.youtube.com/embed/${videoId}`}
+          title="YouTube video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
     );
   }
 
   // Instagram
   if (hostname.includes("instagram.com")) {
     return (
-      <iframe
-        src={`https://www.instagram.com/p/DFg9pIASoq_/embed`}
-        width="400"
-        height="480"
-        frameBorder="0"
-        scrolling="no"
-      ></iframe>
+      <div className="relative w-full max-w-md mx-auto" style={{ aspectRatio: '400/480' }}>
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src={`https://www.instagram.com/p/DFg9pIASoq_/embed`}
+          frameBorder="0"
+          scrolling="no"
+        ></iframe>
+      </div>
     );
   }
 
   // TikTok
   if (hostname.includes("tiktok.com")) {
     return (
-      <>
+      <div className="w-full max-w-sm mx-auto">
         <blockquote
           className="tiktok-embed"
           cite="https://www.tiktok.com/@scout2015/video/6718335390845095173"
           data-video-id="6718335390845095173"
-          style={{ width: "100%", height: "500px" }}
+          style={{ width: "100%", minHeight: "500px" }}
         ></blockquote>
         <script async src="https://www.tiktok.com/embed.js"></script>
-      </>
+      </div>
     );
   }
 
   // SoundCloud
   if (hostname.includes("soundcloud.com")) {
     return (
-      <iframe
-        width="100%"
-        height="166"
-        scrolling="no"
-        frameBorder="no"
-        allow="autoplay"
-        src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`}
-      ></iframe>
+      <div className="w-full">
+        <iframe
+          className="w-full h-32 sm:h-40"
+          scrolling="no"
+          frameBorder="no"
+          allow="autoplay"
+          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`}
+        ></iframe>
+      </div>
     );
   }
 
@@ -76,13 +79,14 @@ const EmbedContent: React.FC<EmbedContentProps> = ({ url }) => {
     const parts = url.split("/");
     const trackId = parts[parts.length - 1].split("?")[0];
     return (
-      <iframe
-        src={`https://open.spotify.com/embed/track/${trackId}`}
-        width="300"
-        height="380"
-        frameBorder="0"
-        allow="encrypted-media"
-      ></iframe>
+      <div className="relative w-full max-w-sm mx-auto" style={{ aspectRatio: '280/380' }}>
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src={`https://open.spotify.com/embed/track/${trackId}`}
+          frameBorder="0"
+          allow="encrypted-media"
+        ></iframe>
+      </div>
     );
   }
 

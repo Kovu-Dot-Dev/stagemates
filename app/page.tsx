@@ -3,7 +3,7 @@
 import { useSession, signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import HomeCard from "@/components/homeCard";
+import HomeCard from "@/components/musicianCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ import {
 import { Band } from "@/types";
 import AskJamie from "@/components/askJamie";
 import Script from "next/script";
+import MusicianCard from "@/components/musicianCard";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -321,7 +322,7 @@ export default function Home() {
             <div className="flex flex-col gap-4">
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
-                  <HomeCard
+                  <MusicianCard
                     key={user.id}
                     userId={user.id}
                     title={user.name}
