@@ -267,7 +267,7 @@ export default function ProfilePage() {
                   Quisquam, quos.
                 </DialogDescription>
               </DialogHeader>
-              <CreateBandForm users={users} user={user}/>
+              <CreateBandForm users={users} user={user} onSuccess={() => setIsDialogOpen(false)}/>
             </DialogContent>
           </Dialog>
         </div>
