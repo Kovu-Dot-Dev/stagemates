@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ interface CTACardProps {
 
 export default function CTACard({ title, buttonText }: CTACardProps) {
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
 
   const router = useRouter();
   const onButtonClick = () => {
@@ -37,7 +39,7 @@ export default function CTACard({ title, buttonText }: CTACardProps) {
         <CardTitle className="text-xl">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 text-center">
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={onButtonClick} className="w-full" size="lg">
               {buttonText}
@@ -45,7 +47,7 @@ export default function CTACard({ title, buttonText }: CTACardProps) {
           </DialogTrigger>
           <DialogContent>
             <DialogTitle>Create a New Jam Session</DialogTitle>
-            <CreateJamForm />
+            <CreateJamForm onSuccess={() => setOpen(false)}/>
           </DialogContent>
         </Dialog>
       </CardContent>
