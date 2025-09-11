@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
@@ -120,10 +120,6 @@ export function ProfileForm({
       availability: availability || [],
       preferredGenres: preferredGenres || [],
     },
-  });
-  const prefGenres = useWatch({
-    control: form.control,
-    name: "preferredGenres",
   });
   const [selectedGenre, setSelectedGenre] = useState('');
 
