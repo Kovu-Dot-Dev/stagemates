@@ -266,7 +266,7 @@ export default function ProfilePage() {
                   Create a new band with your friends
                 </DialogDescription>
               </DialogHeader>
-              <CreateBandForm users={users} user={user} />
+              <CreateBandForm users={users} user={user} onSuccess={() => setIsDialogOpen(false)}/>
             </DialogContent>
           </Dialog>
         </div>
