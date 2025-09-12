@@ -75,7 +75,6 @@ export function JamModal({
 }
 
 export default function JamCard({
-  imageUrl = "/george.png",
   handleClick,
   jam,
 }: {
@@ -126,7 +125,11 @@ export default function JamCard({
     >
       <div className="flex">
         <div className="flex-shrink w-48 min-w-8 pl-6 flex items-center justify-center">
-          <img src="/george.png" alt="george" className="w-full h-auto object-contain" />
+          <img
+            src="/george.png"
+            alt="george"
+            className="w-full h-auto object-contain"
+          />
         </div>
         <CardHeader className="min-w-48">
           <CardTitle className="break-words">{jam.jam_name}</CardTitle>
@@ -143,7 +146,11 @@ export default function JamCard({
           </CardDescription>
           <CardDescription>
             {attendees.map((attendee, index) => (
-              <Badge variant="outline" className={`mb-2 ${index < attendees.length - 1 ? 'mr-2' : ''}`} key={attendee.id}>
+              <Badge
+                variant="outline"
+                className={`mb-2 ${index < attendees.length - 1 ? "mr-2" : ""}`}
+                key={attendee.id}
+              >
                 {attendee.name}
               </Badge>
             ))}

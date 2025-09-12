@@ -19,7 +19,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -29,9 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Band } from "@/types";
-import AskJamie from "@/components/askJamie";
 import Script from "next/script";
 import MusicianCard from "@/components/musicianCard";
+import { toast } from "sonner";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -132,7 +131,7 @@ export default function Home() {
       const response = await fetch("/api/jams");
       const result = await response.json();
       if (result.data) {
-        console.log('xx jams', result.data);
+        console.log("xx jams", result.data);
         setJams(result.data);
       }
     };
@@ -189,22 +188,26 @@ export default function Home() {
     }
   }, [session, status, router, loading]);
 
+  useEffect(() => {
+    toast.info("This is a working prototype, so bugs are expected!");
+  }, [loading]);
+
   // Filter users based on search term and exclude current user
   const filteredUsers = users.filter(
     (user) =>
       // Exclude current user from the list
       user.id !== currentUserId &&
       (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.instruments?.some((instrument) =>
-        instrument.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ||
-      user.genres?.some((genreId) => {
-        const genre = genres.find((g) => g.id === genreId);
-        return genre?.name.toLowerCase().includes(searchTerm.toLowerCase());
-      }) ||
-      user.availability?.some((day) =>
-        day.toLowerCase().includes(searchTerm.toLowerCase())
-      ))
+        user.instruments?.some((instrument) =>
+          instrument.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        user.genres?.some((genreId) => {
+          const genre = genres.find((g) => g.id === genreId);
+          return genre?.name.toLowerCase().includes(searchTerm.toLowerCase());
+        }) ||
+        user.availability?.some((day) =>
+          day.toLowerCase().includes(searchTerm.toLowerCase())
+        ))
   );
 
   // Helper to get genre names from ids (if available)
@@ -330,7 +333,9 @@ export default function Home() {
                     title={user.name}
                     instruments={user.instruments ?? []}
                     availability={user.availability ?? []}
-                    genres={user.genres?.map(genreId => getGenreName(genreId))}
+                    genres={user.genres?.map((genreId) =>
+                      getGenreName(genreId)
+                    )}
                   />
                 ))
               ) : searchTerm ? (
