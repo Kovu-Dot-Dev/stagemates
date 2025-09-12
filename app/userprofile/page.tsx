@@ -188,6 +188,8 @@ export default function ProfilePage() {
     if (result.data) {
       console.log("Invite accepted successfully");
       alert("Invite accepted successfully!");
+      // Remove the accepted invite from the local state
+      setInvites(prevInvites => prevInvites.filter(invite => invite.id.toString() !== inviteId));
     } else {
       setError(result.error || "Invite not accepted");
     }
@@ -294,7 +296,7 @@ export default function ProfilePage() {
                   <AlertTitle>Invites</AlertTitle>
                   <AlertDescription>
                     <p>
-                      You have {invites.length} invite{" "}
+                      You have {invites.length} invite{" "} from
                       {invites.length > 1 ? "s" : ""}
                     </p>
                     <div>

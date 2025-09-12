@@ -372,7 +372,7 @@ export default function Home() {
                 bands.map((band: Band) => (
                   <div
                     key={band.id}
-                    className="p-4 border border-gray-200 rounded-lg shadow-sm flex justify-between items-start"
+                    className="p-4 border border-gray-200 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4"
                   >
                     <div className="flex flex-col">
                       <h2 className="text-xl font-semibold mb-2">
@@ -397,11 +397,9 @@ export default function Home() {
                     </div>
                     <Button
                       variant="outline"
-                      className="cursor-pointer"
+                      className="cursor-pointer "
                       size="sm"
                       onClick={() => {
-                        console.log("xxxxx", band.id);
-                        console.log("xxxx", band.name);
                         setSelectedBand(band);
                         setIsDialogOpen(true);
                       }}

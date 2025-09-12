@@ -68,10 +68,6 @@ export function JamModal({
             {jam.capacity}
           </div>
           <Button onClick={onClose}>Close</Button>
-          {/* Request to join button */}
-          <Button variant="ghost" className="mt-4 ml-2 opacity-30" onClick={() => {}}>
-            Request to Join
-          </Button>
         </div>
       </div>
     </div>
