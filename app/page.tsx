@@ -192,23 +192,52 @@ export default function Home() {
     toast.info("This is a working prototype, so bugs are expected!");
   }, [loading]);
 
+  // vibe coded nonsense
+  const getUserDataScore = (user: User) => {
+    let score = 0;
+    
+    // Basic required fields (always present)
+    if (user.name) score += 1;
+    if (user.email) score += 1;
+    
+    // Optional fields with varying weights
+    if (user.instruments && user.instruments.length > 0) {
+      score += user.instruments.length; // More instruments = higher score
+    }
+    if (user.availability && user.availability.length > 0) {
+      score += user.availability.length; // More available days = higher score
+    }
+    if (user.genres && user.genres.length > 0) {
+      score += user.genres.length; // More genres = higher score
+    }
+    
+    return score;
+  };
+
   // Filter users based on search term and exclude current user
-  const filteredUsers = users.filter(
-    (user) =>
-      // Exclude current user from the list
-      user.id !== currentUserId &&
-      (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.instruments?.some((instrument) =>
-          instrument.toLowerCase().includes(searchTerm.toLowerCase())
-        ) ||
-        user.genres?.some((genreId) => {
-          const genre = genres.find((g) => g.id === genreId);
-          return genre?.name.toLowerCase().includes(searchTerm.toLowerCase());
-        }) ||
-        user.availability?.some((day) =>
-          day.toLowerCase().includes(searchTerm.toLowerCase())
-        ))
-  );
+  const filteredUsers = users
+    .filter(
+      (user) =>
+        // Exclude current user from the list
+        user.id !== currentUserId &&
+        (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.instruments?.some((instrument) =>
+            instrument.toLowerCase().includes(searchTerm.toLowerCase())
+          ) ||
+          user.genres?.some((genreId) => {
+            const genre = genres.find((g) => g.id === genreId);
+            return genre?.name.toLowerCase().includes(searchTerm.toLowerCase());
+          }) ||
+          user.availability?.some((day) =>
+            day.toLowerCase().includes(searchTerm.toLowerCase())
+          ))
+    )
+    .sort((a, b) => {
+      // Sort by data completeness score (highest first)
+      const scoreA = getUserDataScore(a);
+      const scoreB = getUserDataScore(b);
+      return scoreB - scoreA;
+    });
 
   // Helper to get genre names from ids (if available)
   // You may want to fetch all genres and map ids to names for a real app

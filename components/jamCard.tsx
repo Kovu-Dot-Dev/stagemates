@@ -88,6 +88,10 @@ export default function JamCard({
     handleClick?.();
   };
   const [attendees, setAttendees] = useState<User[]>([]);
+  
+  // Generate predictable room image based on jam data (0-5)
+  const roomNumber = jam.id % 6;
+  const roomImageSrc = `/rooms/room${roomNumber}.jpeg`;
 
   // Helper function to get date status
   const getDateStatus = (dateString: string) => {
@@ -126,9 +130,9 @@ export default function JamCard({
       <div className="flex">
         <div className="flex-shrink w-48 min-w-8 pl-6 flex items-center justify-center">
           <img
-            src="/george.png"
-            alt="george"
-            className="w-full h-auto object-contain"
+            src={roomImageSrc}
+            alt="room"
+            className="w-full h-auto object-contain rounded-lg"
           />
         </div>
         <CardHeader className="min-w-48">
