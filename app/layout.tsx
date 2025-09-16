@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 export default function RootLayout({
   children,
 }: Readonly<{
+  
   children: React.ReactNode;
 }>) {
   return (
@@ -27,7 +28,7 @@ export default function RootLayout({
       >
         <SessionProvider>
           {children}
-          <Toaster position="top-center" richColors duration={50000}/>
+          <Toaster position="bottom-left" richColors duration={50000}/>
         </SessionProvider>
       </body>
     </html>

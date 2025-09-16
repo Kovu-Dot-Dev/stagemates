@@ -2,8 +2,7 @@
 
 import { useSession, signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import HomeCard from "@/components/musicianCard";
+import { useEffect, useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +47,7 @@ export default function Home() {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [userData, setUserData] = useState<User | null>(null);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
+  const toastShown = useRef(false);
 
   useEffect(() => {
     const handleUser = async () => {
@@ -189,17 +189,21 @@ export default function Home() {
   }, [session, status, router, loading]);
 
   useEffect(() => {
-    toast.info("This is a working prototype, so bugs are expected!");
-  }, [loading]);
+    // Only show toast when not loading and toaster is ready
+    if (!toastShown.current && !loading && status !== "loading") {
+      toast.info("This is a working prototype! Bugs expected!");
+      toastShown.current = true;
+    }
+  }, [loading, status]); 
 
   // vibe coded nonsense
   const getUserDataScore = (user: User) => {
     let score = 0;
-    
+
     // Basic required fields (always present)
     if (user.name) score += 1;
     if (user.email) score += 1;
-    
+
     // Optional fields with varying weights
     if (user.instruments && user.instruments.length > 0) {
       score += user.instruments.length; // More instruments = higher score
@@ -210,7 +214,7 @@ export default function Home() {
     if (user.genres && user.genres.length > 0) {
       score += user.genres.length; // More genres = higher score
     }
-    
+
     return score;
   };
 
