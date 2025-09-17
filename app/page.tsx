@@ -191,10 +191,10 @@ export default function Home() {
   useEffect(() => {
     // Only show toast when not loading and toaster is ready
     if (!toastShown.current && !loading && status !== "loading") {
-      toast.info("This is a working prototype! Bugs expected!");
+      toast.info("This is a prototype! Feedback? Hit that chat icon :)");
       toastShown.current = true;
     }
-  }, [loading, status]); 
+  }, [loading, status]);
 
   // vibe coded nonsense
   const getUserDataScore = (user: User) => {
